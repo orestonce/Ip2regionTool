@@ -191,9 +191,9 @@ func VerifyIpRangeList(req VerifyIpRangeListRequest) (errMsg string) {
 		if left.LowU32 >= right.LowU32 {
 			return "ip范围未排序: " + left.Origin
 		}
-		if left.Attach == right.Attach {
-			return "没有全部聚合: " + uint32ToIp(left.HighU32).String()
-		}
+		//if left.Attach == right.Attach {
+		//	return "没有全部聚合: " + uint32ToIp(left.HighU32).String()
+		//}
 	}
 	for _, one := range req.DataInfoList {
 		if one.LowU32 > one.LowU32 {
