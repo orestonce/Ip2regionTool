@@ -31,7 +31,6 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     ip2region.h \
-    ip2region-impl.h \
     dbtotxtform.h \
     txttodbform.h
 
