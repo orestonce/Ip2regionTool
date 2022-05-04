@@ -59,15 +59,16 @@ func ConvertTxtToDb(txtFileName string, dbFileName string) (errMsg string) {
 	if errMsg != `` {
 		return "文件数据错误: " + errMsg
 	}
+	mergeList := MergeIpRangeList(list)
 	errMsg = VerifyIpRangeList(VerifyIpRangeListRequest{
-		DataInfoList:     list,
+		DataInfoList:     mergeList,
 		VerifyFullUint32: true,
 		VerifyFiled7:     true,
 	})
 	if errMsg != `` {
 		return "验证文件数据失败: " + errMsg
 	}
-	data := WriteV1DataBlob(list)
+	data := WriteV1DataBlob(mergeList)
 	err = os.WriteFile(dbFileName, data, 0777)
 	if err != nil {
 		return "输出文件写入失败: " + err.Error()
@@ -235,4 +236,21 @@ func ipToUint32(ip net.IP) uint32 {
 
 func getUint32(b []byte, offset uint32) uint32 {
 	return binary.LittleEndian.Uint32(b[offset:])
+}
+
+func MergeIpRangeList(list []IpRangeItem) []IpRangeItem {
+	listLen := len(list)
+	merge := make([]IpRangeItem, 0, listLen)
+
+	for idx := 0; idx < listLen; idx++ {
+		mergeLen := len(merge)
+		if idx > 0 && merge[mergeLen-1].Attach == list[idx].Attach && merge[mergeLen-1].HighU32+1 == list[idx].LowU32 {
+			merge[mergeLen-1].HighU32 = list[idx].HighU32
+			continue
+		}
+
+		merge = append(merge, list[idx])
+	}
+
+	return merge
 }
