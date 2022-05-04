@@ -2,8 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "dbtotxtform.h"
-#include "txttodbform.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,15 +15,22 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 private slots:
-    void on_actionDbToTxt_triggered();
+    void on_pushButton_input_db_clicked();
 
-    void on_actionTxtToDb_triggered();
-private:
-    void refresh_status(int idx);
+    void on_pushButton_output_txt_clicked();
+
+    void on_pushButton_input_txt_clicked();
+
+    void on_pushButton_output_db_clicked();
+
+    void on_pushButton_DbToTxt_clicked();
+
+    void on_pushButton_TxtToDb_clicked();
+
+    void on_tabWidget_currentChanged(int index);
+
 private:
     Ui::MainWindow *ui;
-    DbToTxtForm* m_form1;
-    TxtToDbForm* m_form2;
 };
 
 #endif // MAINWINDOW_H

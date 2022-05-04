@@ -3,6 +3,18 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+//Qt Creator 需要在xxx.pro 内部增加静态库的链接声明
+//LIBS += -L$$PWD -lip2region-impl
 
-std::string ConvertDbToTxt(std::string in0, std::string in1);
-std::string ConvertTxtToDb(std::string in0, std::string in1);
+struct ConvertDbToTxt_Req{
+	std::string DbFileName;
+	std::string TxtFileName;
+	bool Merge;
+};
+std::string ConvertDbToTxt(ConvertDbToTxt_Req in0);
+struct ConvertTxtToDb_Req{
+	std::string TxtFileName;
+	std::string DbFileName;
+	bool Merge;
+};
+std::string ConvertTxtToDb(ConvertTxtToDb_Req in0);

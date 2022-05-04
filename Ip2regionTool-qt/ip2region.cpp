@@ -39,8 +39,8 @@ typedef int GoInt32;
 typedef unsigned int GoUint32;
 typedef long long GoInt64;
 typedef unsigned long long GoUint64;
-typedef GoInt32 GoInt;
-typedef GoUint32 GoUint;
+typedef GoInt64 GoInt;
+typedef GoUint64 GoUint;
 typedef __SIZE_TYPE__ GoUintptr;
 typedef float GoFloat32;
 typedef double GoFloat64;
@@ -51,7 +51,7 @@ typedef double _Complex GoComplex128;
   static assertion to make sure the file is being used on architecture
   at least with matching size of GoInt.
 */
-typedef char _check_for_32_bit_pointer_matching_GoInt[sizeof(void*)==32/8 ? 1:-1];
+typedef char _check_for_64_bit_pointer_matching_GoInt[sizeof(void*)==64/8 ? 1:-1];
 
 #ifndef GO_CGO_GOSTRING_TYPEDEF
 typedef _GoString_ GoString;
@@ -77,27 +77,30 @@ extern __declspec(dllexport) void Go2cppFn_ConvertTxtToDb(char* in, int inLen, c
 #endif
 
 
-std::string ConvertDbToTxt(std::string in0, std::string in1){
+std::string ConvertDbToTxt(ConvertDbToTxt_Req in0){
 	std::string in;
 	{
-		uint32_t length = in0.length();
-		char tmp[4];
-		tmp[0] = (uint32_t(length) >> 24) & 0xFF;
-		tmp[1] = (uint32_t(length) >> 16) & 0xFF;
-		tmp[2] = (uint32_t(length) >> 8) & 0xFF;
-		tmp[3] = (uint32_t(length) >> 0) & 0xFF;
-		in.append(tmp, 4);
-		in.append(in0);
-	}
-	{
-		uint32_t length = in1.length();
-		char tmp[4];
-		tmp[0] = (uint32_t(length) >> 24) & 0xFF;
-		tmp[1] = (uint32_t(length) >> 16) & 0xFF;
-		tmp[2] = (uint32_t(length) >> 8) & 0xFF;
-		tmp[3] = (uint32_t(length) >> 0) & 0xFF;
-		in.append(tmp, 4);
-		in.append(in1);
+		{
+			uint32_t tmp9 = in0.DbFileName.length();
+			char tmp10[4];
+			tmp10[0] = (uint32_t(tmp9) >> 24) & 0xFF;
+			tmp10[1] = (uint32_t(tmp9) >> 16) & 0xFF;
+			tmp10[2] = (uint32_t(tmp9) >> 8) & 0xFF;
+			tmp10[3] = (uint32_t(tmp9) >> 0) & 0xFF;
+			in.append(tmp10, 4);
+			in.append(in0.DbFileName);
+		}
+		{
+			uint32_t tmp11 = in0.TxtFileName.length();
+			char tmp12[4];
+			tmp12[0] = (uint32_t(tmp11) >> 24) & 0xFF;
+			tmp12[1] = (uint32_t(tmp11) >> 16) & 0xFF;
+			tmp12[2] = (uint32_t(tmp11) >> 8) & 0xFF;
+			tmp12[3] = (uint32_t(tmp11) >> 0) & 0xFF;
+			in.append(tmp12, 4);
+			in.append(in0.TxtFileName);
+		}
+		in.append((char*)(&in0.Merge), 1);
 	}
 	char *out = NULL;
 	int outLen = 0;
@@ -105,15 +108,15 @@ std::string ConvertDbToTxt(std::string in0, std::string in1){
 	std::string retValue;
 	int outIdx = 0;
 	{
-		uint32_t length = 0;
-		uint32_t a = uint32_t(uint8_t(out[outIdx+0]) << 24);
-		uint32_t b = uint32_t(uint8_t(out[outIdx+1]) << 16);
-		uint32_t c = uint32_t(uint8_t(out[outIdx+2]) << 8);
-		uint32_t d = uint32_t(uint8_t(out[outIdx+3]) << 0);
-		length = a | b | c | d;
+		uint32_t tmp13 = 0;
+		uint32_t tmp14 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+		uint32_t tmp15 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+		uint32_t tmp16 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+		uint32_t tmp17 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+		tmp13 = tmp14 | tmp15 | tmp16 | tmp17;
 		outIdx+=4;
-		retValue = std::string(out+outIdx, out+outIdx+length);
-		outIdx+=length;
+		retValue = std::string(out+outIdx, out+outIdx+tmp13);
+		outIdx+=tmp13;
 	}
 	if (out != NULL) {
 		free(out);
@@ -121,27 +124,30 @@ std::string ConvertDbToTxt(std::string in0, std::string in1){
 	return retValue;
 }
 
-std::string ConvertTxtToDb(std::string in0, std::string in1){
+std::string ConvertTxtToDb(ConvertTxtToDb_Req in0){
 	std::string in;
 	{
-		uint32_t length = in0.length();
-		char tmp[4];
-		tmp[0] = (uint32_t(length) >> 24) & 0xFF;
-		tmp[1] = (uint32_t(length) >> 16) & 0xFF;
-		tmp[2] = (uint32_t(length) >> 8) & 0xFF;
-		tmp[3] = (uint32_t(length) >> 0) & 0xFF;
-		in.append(tmp, 4);
-		in.append(in0);
-	}
-	{
-		uint32_t length = in1.length();
-		char tmp[4];
-		tmp[0] = (uint32_t(length) >> 24) & 0xFF;
-		tmp[1] = (uint32_t(length) >> 16) & 0xFF;
-		tmp[2] = (uint32_t(length) >> 8) & 0xFF;
-		tmp[3] = (uint32_t(length) >> 0) & 0xFF;
-		in.append(tmp, 4);
-		in.append(in1);
+		{
+			uint32_t tmp9 = in0.TxtFileName.length();
+			char tmp10[4];
+			tmp10[0] = (uint32_t(tmp9) >> 24) & 0xFF;
+			tmp10[1] = (uint32_t(tmp9) >> 16) & 0xFF;
+			tmp10[2] = (uint32_t(tmp9) >> 8) & 0xFF;
+			tmp10[3] = (uint32_t(tmp9) >> 0) & 0xFF;
+			in.append(tmp10, 4);
+			in.append(in0.TxtFileName);
+		}
+		{
+			uint32_t tmp11 = in0.DbFileName.length();
+			char tmp12[4];
+			tmp12[0] = (uint32_t(tmp11) >> 24) & 0xFF;
+			tmp12[1] = (uint32_t(tmp11) >> 16) & 0xFF;
+			tmp12[2] = (uint32_t(tmp11) >> 8) & 0xFF;
+			tmp12[3] = (uint32_t(tmp11) >> 0) & 0xFF;
+			in.append(tmp12, 4);
+			in.append(in0.DbFileName);
+		}
+		in.append((char*)(&in0.Merge), 1);
 	}
 	char *out = NULL;
 	int outLen = 0;
@@ -149,19 +155,20 @@ std::string ConvertTxtToDb(std::string in0, std::string in1){
 	std::string retValue;
 	int outIdx = 0;
 	{
-		uint32_t length = 0;
-		uint32_t a = uint32_t(uint8_t(out[outIdx+0]) << 24);
-		uint32_t b = uint32_t(uint8_t(out[outIdx+1]) << 16);
-		uint32_t c = uint32_t(uint8_t(out[outIdx+2]) << 8);
-		uint32_t d = uint32_t(uint8_t(out[outIdx+3]) << 0);
-		length = a | b | c | d;
+		uint32_t tmp13 = 0;
+		uint32_t tmp14 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+		uint32_t tmp15 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+		uint32_t tmp16 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+		uint32_t tmp17 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+		tmp13 = tmp14 | tmp15 | tmp16 | tmp17;
 		outIdx+=4;
-		retValue = std::string(out+outIdx, out+outIdx+length);
-		outIdx+=length;
+		retValue = std::string(out+outIdx, out+outIdx+tmp13);
+		outIdx+=tmp13;
 	}
 	if (out != NULL) {
 		free(out);
 	}
 	return retValue;
 }
+
 

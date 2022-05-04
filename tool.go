@@ -11,21 +11,30 @@ import (
 	"strings"
 )
 
-func ConvertDbToTxt(dbFileName string, txtFileName string) (errMsg string) {
-	stat, err := os.Stat(dbFileName)
+type ConvertDbToTxt_Req struct {
+	DbFileName  string
+	TxtFileName string
+	Merge       bool
+}
+
+func ConvertDbToTxt(req ConvertDbToTxt_Req) (errMsg string) {
+	stat, err := os.Stat(req.DbFileName)
 	if err != nil {
-		return "文件状态错误: " + dbFileName + "," + err.Error()
+		return "文件状态错误: " + req.DbFileName + "," + err.Error()
 	}
 	if stat.Size() > 1000*1024*1024 {
 		return "不支持超过1000MB的db文件: " + strconv.Itoa(int(stat.Size()))
 	}
-	dbFileContent, err := os.ReadFile(dbFileName)
+	dbFileContent, err := os.ReadFile(req.DbFileName)
 	if err != nil {
-		return "读取db文件失败: " + dbFileName + ", " + err.Error()
+		return "读取db文件失败: " + req.DbFileName + ", " + err.Error()
 	}
 	list, errMsg := ReadV1DataBlob(dbFileContent)
 	if errMsg != `` {
 		return "文件数据错误: " + errMsg
+	}
+	if req.Merge {
+		list = MergeIpRangeList(list)
 	}
 	errMsg = VerifyIpRangeList(VerifyIpRangeListRequest{
 		DataInfoList:     list,
@@ -36,28 +45,37 @@ func ConvertDbToTxt(dbFileName string, txtFileName string) (errMsg string) {
 		return "验证文件数据失败: " + errMsg
 	}
 	data := WriteV1DataTxt(list)
-	err = os.WriteFile(txtFileName, data, 0777)
+	err = os.WriteFile(req.TxtFileName, data, 0777)
 	if err != nil {
 		return "输出文件写入失败: " + err.Error()
 	}
 	return ""
 }
 
-func ConvertTxtToDb(txtFileName string, dbFileName string) (errMsg string) {
-	stat, err := os.Stat(txtFileName)
+type ConvertTxtToDb_Req struct {
+	TxtFileName string
+	DbFileName  string
+	Merge       bool
+}
+
+func ConvertTxtToDb(req ConvertTxtToDb_Req) (errMsg string) {
+	stat, err := os.Stat(req.TxtFileName)
 	if err != nil {
-		return "文件状态错误: " + dbFileName + "," + err.Error()
+		return "文件状态错误: " + req.DbFileName + "," + err.Error()
 	}
 	if stat.Size() > 1000*1024*1024 {
 		return "不支持超过1000MB的db文件: " + strconv.Itoa(int(stat.Size()))
 	}
-	txtFileContent, err := os.ReadFile(txtFileName)
+	txtFileContent, err := os.ReadFile(req.TxtFileName)
 	if err != nil {
-		return "读取db文件失败: " + txtFileName + ", " + err.Error()
+		return "读取db文件失败: " + req.TxtFileName + ", " + err.Error()
 	}
 	list := ReadV1DataTxt(txtFileContent)
 	if errMsg != `` {
 		return "文件数据错误: " + errMsg
+	}
+	if req.Merge {
+		list = MergeIpRangeList(list)
 	}
 	errMsg = VerifyIpRangeList(VerifyIpRangeListRequest{
 		DataInfoList:     list,
@@ -68,7 +86,7 @@ func ConvertTxtToDb(txtFileName string, dbFileName string) (errMsg string) {
 		return "验证文件数据失败: " + errMsg
 	}
 	data := WriteV1DataBlob(list)
-	err = os.WriteFile(dbFileName, data, 0777)
+	err = os.WriteFile(req.DbFileName, data, 0777)
 	if err != nil {
 		return "输出文件写入失败: " + err.Error()
 	}
@@ -235,4 +253,21 @@ func ipToUint32(ip net.IP) uint32 {
 
 func getUint32(b []byte, offset uint32) uint32 {
 	return binary.LittleEndian.Uint32(b[offset:])
+}
+
+func MergeIpRangeList(list []IpRangeItem) []IpRangeItem {
+	listLen := len(list)
+	merge := make([]IpRangeItem, 0, listLen)
+
+	for idx := 0; idx < listLen; idx++ {
+		mergeLen := len(merge)
+		if idx > 0 && merge[mergeLen-1].Attach == list[idx].Attach && merge[mergeLen-1].HighU32+1 == list[idx].LowU32 {
+			merge[mergeLen-1].HighU32 = list[idx].HighU32
+			continue
+		}
+
+		merge = append(merge, list[idx])
+	}
+
+	return merge
 }

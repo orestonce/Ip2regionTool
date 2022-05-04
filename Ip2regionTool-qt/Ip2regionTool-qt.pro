@@ -25,17 +25,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    ip2region.cpp \
-    dbtotxtform.cpp \
-    txttodbform.cpp
+    ip2region.cpp
 
 HEADERS  += mainwindow.h \
-    ip2region.h \
-    dbtotxtform.h \
-    txttodbform.h
+    ip2region.h
 
-FORMS    += mainwindow.ui \
-    dbtotxtform.ui \
-    txttodbform.ui
+FORMS    += mainwindow.ui
 
 LIBS += -L$$PWD -lip2region-impl
