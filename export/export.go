@@ -6,13 +6,11 @@ import (
 )
 
 func main() {
-	ctx := go2cpp.NewGo2cppContext(go2cpp.NewGo2cppContextReq{
-		CppBaseName:       "ip2region",
-		EnableQt:          false,
-		QtExtendBaseClass: "",
-		QtIncludeList:     nil,
+	ctx := go2cpp.NewGo2cppContext(go2cpp.NewGo2cppContext_Req{
+		CppBaseName:                 "ip2region",
+		EnableQtClass_RunOnUiThread: false,
 	})
 	ctx.Generate1(Ip2regionTool.ConvertDbToTxt)
 	ctx.Generate1(Ip2regionTool.ConvertTxtToDb)
-	ctx.MustCreate386LibraryInDir("Ip2regionTool-qt")
+	ctx.MustCreateAmd64LibraryInDir("Ip2regionTool-qt")
 }

@@ -18,11 +18,16 @@ func main() {
 func init() {
 	var dbFileName string
 	var txtFileName string
+	var merge bool
 
 	DbToTxtCmd := &cobra.Command{
 		Use: "DbToTxt",
 		Run: func(cmd *cobra.Command, args []string) {
-			errMsg := Ip2regionTool.ConvertDbToTxt(dbFileName, txtFileName)
+			errMsg := Ip2regionTool.ConvertDbToTxt(Ip2regionTool.ConvertDbToTxt_Req{
+				DbFileName:  dbFileName,
+				TxtFileName: txtFileName,
+				Merge:       merge,
+			})
 			if errMsg != `` {
 				fmt.Println(errMsg)
 				os.Exit(-1)
@@ -31,12 +36,17 @@ func init() {
 	}
 	DbToTxtCmd.Flags().StringVarP(&txtFileName, `txt`, ``, "", ``)
 	DbToTxtCmd.Flags().StringVarP(&dbFileName, `db`, ``, "", ``)
+	DbToTxtCmd.Flags().BoolVarP(&merge, "merge", "", true, "")
 	rootCmd.AddCommand(DbToTxtCmd)
 
 	TxtToDbCmd := &cobra.Command{
 		Use: "TxtToDb",
 		Run: func(cmd *cobra.Command, args []string) {
-			errMsg := Ip2regionTool.ConvertTxtToDb(txtFileName, dbFileName)
+			errMsg := Ip2regionTool.ConvertTxtToDb(Ip2regionTool.ConvertTxtToDb_Req{
+				TxtFileName: txtFileName,
+				DbFileName:  dbFileName,
+				Merge:       merge,
+			})
 			if errMsg != `` {
 				fmt.Println(errMsg)
 				os.Exit(-1)
@@ -45,5 +55,6 @@ func init() {
 	}
 	TxtToDbCmd.Flags().StringVarP(&txtFileName, `txt`, ``, "", ``)
 	TxtToDbCmd.Flags().StringVarP(&dbFileName, `db`, ``, "", ``)
+	TxtToDbCmd.Flags().BoolVarP(&merge, "merge", "", true, "")
 	rootCmd.AddCommand(TxtToDbCmd)
 }
