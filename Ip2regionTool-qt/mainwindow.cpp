@@ -19,7 +19,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_input_db_clicked()
 {
-    QString input = QFileDialog::getOpenFileName(this, ui->lineEdit_input_db->text(),  "", "*.db");
+    QString input = QFileDialog::getOpenFileName(this, "",  "", "*.db");
     if (!input.isEmpty()) {
         ui->lineEdit_input_db->setText(input);
     }
@@ -28,7 +28,7 @@ void MainWindow::on_pushButton_input_db_clicked()
 
 void MainWindow::on_pushButton_output_txt_clicked()
 {
-    QString output = QFileDialog::getSaveFileName(this, ui->lineEdit_output_txt->text(),  "", "*.txt");
+    QString output = QFileDialog::getSaveFileName(this, "",  "", "*.txt");
     if (!output.isEmpty()) {
         ui->lineEdit_output_txt->setText(output);
     }
@@ -36,7 +36,7 @@ void MainWindow::on_pushButton_output_txt_clicked()
 
 void MainWindow::on_pushButton_input_txt_clicked()
 {
-    QString input = QFileDialog::getOpenFileName(this, ui->lineEdit_input_db->text(),  "", "*.txt");
+    QString input = QFileDialog::getOpenFileName(this, "",  "", "*.txt");
     if (!input.isEmpty()) {
         ui->lineEdit_input_txt->setText(input);
     }
@@ -44,7 +44,7 @@ void MainWindow::on_pushButton_input_txt_clicked()
 
 void MainWindow::on_pushButton_output_db_clicked()
 {
-    QString output = QFileDialog::getSaveFileName(this, ui->lineEdit_output_txt->text(),  "", "*.db");
+    QString output = QFileDialog::getSaveFileName(this, "",  "", "*.db");
     if (!output.isEmpty()) {
         ui->lineEdit_output_db->setText(output);
     }
