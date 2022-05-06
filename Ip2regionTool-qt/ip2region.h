@@ -15,6 +15,7 @@ std::string ConvertDbToTxt(ConvertDbToTxt_Req in0);
 struct ConvertTxtToDb_Req{
 	std::string TxtFileName;
 	std::string DbFileName;
+	std::string RegionCsvFileName;
 	bool Merge;
 };
 std::string ConvertTxtToDb(ConvertTxtToDb_Req in0);

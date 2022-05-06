@@ -3,6 +3,7 @@ package Ip2regionTool
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/csv"
 	"math"
 	"net"
 	"os"
@@ -53,9 +54,10 @@ func ConvertDbToTxt(req ConvertDbToTxt_Req) (errMsg string) {
 }
 
 type ConvertTxtToDb_Req struct {
-	TxtFileName string
-	DbFileName  string
-	Merge       bool
+	TxtFileName       string
+	DbFileName        string
+	RegionCsvFileName string
+	Merge             bool
 }
 
 func ConvertTxtToDb(req ConvertTxtToDb_Req) (errMsg string) {
@@ -65,6 +67,13 @@ func ConvertTxtToDb(req ConvertTxtToDb_Req) (errMsg string) {
 	}
 	if stat.Size() > 1000*1024*1024 {
 		return "不支持超过1000MB的db文件: " + strconv.Itoa(int(stat.Size()))
+	}
+	var globalRegionMap map[string]uint32
+	if req.RegionCsvFileName != "" {
+		globalRegionMap, errMsg = ReadGlobalRegionMap(req.RegionCsvFileName)
+		if errMsg != "" {
+			return errMsg
+		}
 	}
 	txtFileContent, err := os.ReadFile(req.TxtFileName)
 	if err != nil {
@@ -76,6 +85,12 @@ func ConvertTxtToDb(req ConvertTxtToDb_Req) (errMsg string) {
 	}
 	if req.Merge {
 		list = MergeIpRangeList(list)
+	}
+	if len(globalRegionMap) > 0 {
+		for idx, one := range list {
+			cityId := GetCityId(one.Attach, globalRegionMap)
+			list[idx].CityId = cityId
+		}
 	}
 	errMsg = VerifyIpRangeList(VerifyIpRangeListRequest{
 		DataInfoList:     list,
@@ -93,11 +108,50 @@ func ConvertTxtToDb(req ConvertTxtToDb_Req) (errMsg string) {
 	return ""
 }
 
+func ReadGlobalRegionMap(regionCsv string) (globalRegionMap map[string]uint32, errMsg string) {
+	regionData, err := os.ReadFile(regionCsv)
+	if err != nil {
+		return nil, "读取region.csv失败: " + err.Error()
+	}
+	var recordAll [][]string
+	recordAll, err = csv.NewReader(bytes.NewReader(regionData)).ReadAll()
+	if err != nil {
+		return nil, "读取region.csv失败2: " + err.Error()
+	}
+	globalRegionMap = map[string]uint32{}
+	for _, line := range recordAll {
+		if len(line) != 5 {
+			continue
+		}
+		cityId, _ := strconv.Atoi(line[0])
+		name := line[2]
+		globalRegionMap[name] = uint32(cityId)
+	}
+	return globalRegionMap, ""
+}
+
+func GetCityId(region string, globalRegionMap map[string]uint32) uint32 {
+	var p = strings.Split(region, "|")
+	if len(p) != 5 {
+		return 0
+	}
+	var key string
+	for i := 3; i >= 0; i-- {
+		if p[i] == "0" {
+			continue
+		}
+		key = p[i]
+		return globalRegionMap[key]
+	}
+	return 0
+}
+
 type IpRangeItem struct {
 	Origin  string
 	LowU32  uint32
 	HighU32 uint32
 	Attach  string
+	CityId  uint32
 }
 
 func ReadV1DataTxt(data []byte) (list []IpRangeItem) {
@@ -139,6 +193,7 @@ func WriteV1DataBlob(list []IpRangeItem) (data []byte) {
 		}
 		idxMap[one.Attach] = uint32(len(data)) | uint32((len(one.Attach)+4)<<24)
 		cityIdBytes := make([]byte, 4)
+		binary.LittleEndian.PutUint32(cityIdBytes, one.CityId)
 		data = append(data, cityIdBytes...)
 		data = append(data, one.Attach...)
 	}
@@ -176,6 +231,7 @@ func ReadV1DataBlob(b []byte) (list []IpRangeItem, errMsg string) {
 		if dataLen > math.MaxUint8 {
 			return nil, "附加数据长度异常1 " + strconv.Itoa(int(dataLen))
 		}
+		var cityId uint32
 		if dataLen > 0 {
 			if dataLen < 4 {
 				return nil, "附加数据长度异常2 " + strconv.Itoa(int(dataLen))
@@ -185,11 +241,13 @@ func ReadV1DataBlob(b []byte) (list []IpRangeItem, errMsg string) {
 				return nil, "附加数据长度异常3 " + strconv.Itoa(int(ptr)) + "," + strconv.Itoa(int(dataLen)) + "," + strconv.Itoa(len(b))
 			}
 			attach = string(b[ptr+4 : ptr+dataLen])
+			cityId = binary.LittleEndian.Uint32(b[ptr:])
 		}
 		dataInfoList = append(dataInfoList, IpRangeItem{
 			LowU32:  getUint32(b, idx),
 			HighU32: getUint32(b, idx+4),
 			Attach:  attach,
+			CityId:  cityId,
 		})
 	}
 	return dataInfoList, ""
@@ -209,9 +267,6 @@ func VerifyIpRangeList(req VerifyIpRangeListRequest) (errMsg string) {
 		if left.LowU32 >= right.LowU32 {
 			return "ip范围未排序: " + left.Origin
 		}
-		//if left.Attach == right.Attach {
-		//	return "没有全部聚合: " + uint32ToIp(left.HighU32).String()
-		//}
 	}
 	for _, one := range req.DataInfoList {
 		if one.LowU32 > one.LowU32 {

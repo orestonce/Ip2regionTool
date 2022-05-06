@@ -32,4 +32,7 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
+RC_FILE += version.rc
+
 LIBS += -L$$PWD -lip2region-impl
+
