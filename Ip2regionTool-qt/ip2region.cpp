@@ -128,24 +128,34 @@ std::string ConvertTxtToDb(ConvertTxtToDb_Req in0){
 	std::string in;
 	{
 		{
-			uint32_t tmp9 = in0.TxtFileName.length();
-			char tmp10[4];
-			tmp10[0] = (uint32_t(tmp9) >> 24) & 0xFF;
-			tmp10[1] = (uint32_t(tmp9) >> 16) & 0xFF;
-			tmp10[2] = (uint32_t(tmp9) >> 8) & 0xFF;
-			tmp10[3] = (uint32_t(tmp9) >> 0) & 0xFF;
-			in.append(tmp10, 4);
+			uint32_t tmp12 = in0.TxtFileName.length();
+			char tmp13[4];
+			tmp13[0] = (uint32_t(tmp12) >> 24) & 0xFF;
+			tmp13[1] = (uint32_t(tmp12) >> 16) & 0xFF;
+			tmp13[2] = (uint32_t(tmp12) >> 8) & 0xFF;
+			tmp13[3] = (uint32_t(tmp12) >> 0) & 0xFF;
+			in.append(tmp13, 4);
 			in.append(in0.TxtFileName);
 		}
 		{
-			uint32_t tmp11 = in0.DbFileName.length();
-			char tmp12[4];
-			tmp12[0] = (uint32_t(tmp11) >> 24) & 0xFF;
-			tmp12[1] = (uint32_t(tmp11) >> 16) & 0xFF;
-			tmp12[2] = (uint32_t(tmp11) >> 8) & 0xFF;
-			tmp12[3] = (uint32_t(tmp11) >> 0) & 0xFF;
-			in.append(tmp12, 4);
+			uint32_t tmp14 = in0.DbFileName.length();
+			char tmp15[4];
+			tmp15[0] = (uint32_t(tmp14) >> 24) & 0xFF;
+			tmp15[1] = (uint32_t(tmp14) >> 16) & 0xFF;
+			tmp15[2] = (uint32_t(tmp14) >> 8) & 0xFF;
+			tmp15[3] = (uint32_t(tmp14) >> 0) & 0xFF;
+			in.append(tmp15, 4);
 			in.append(in0.DbFileName);
+		}
+		{
+			uint32_t tmp16 = in0.RegionCsvFileName.length();
+			char tmp17[4];
+			tmp17[0] = (uint32_t(tmp16) >> 24) & 0xFF;
+			tmp17[1] = (uint32_t(tmp16) >> 16) & 0xFF;
+			tmp17[2] = (uint32_t(tmp16) >> 8) & 0xFF;
+			tmp17[3] = (uint32_t(tmp16) >> 0) & 0xFF;
+			in.append(tmp17, 4);
+			in.append(in0.RegionCsvFileName);
 		}
 		in.append((char*)(&in0.Merge), 1);
 	}
@@ -155,15 +165,15 @@ std::string ConvertTxtToDb(ConvertTxtToDb_Req in0){
 	std::string retValue;
 	int outIdx = 0;
 	{
-		uint32_t tmp13 = 0;
-		uint32_t tmp14 = uint32_t(uint8_t(out[outIdx+0]) << 24);
-		uint32_t tmp15 = uint32_t(uint8_t(out[outIdx+1]) << 16);
-		uint32_t tmp16 = uint32_t(uint8_t(out[outIdx+2]) << 8);
-		uint32_t tmp17 = uint32_t(uint8_t(out[outIdx+3]) << 0);
-		tmp13 = tmp14 | tmp15 | tmp16 | tmp17;
+		uint32_t tmp18 = 0;
+		uint32_t tmp19 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+		uint32_t tmp20 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+		uint32_t tmp21 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+		uint32_t tmp22 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+		tmp18 = tmp19 | tmp20 | tmp21 | tmp22;
 		outIdx+=4;
-		retValue = std::string(out+outIdx, out+outIdx+tmp13);
-		outIdx+=tmp13;
+		retValue = std::string(out+outIdx, out+outIdx+tmp18);
+		outIdx+=tmp18;
 	}
 	if (out != NULL) {
 		free(out);

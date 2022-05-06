@@ -29,6 +29,8 @@ private slots:
 
     void on_tabWidget_currentChanged(int index);
 
+    void on_pushButton_input_regin_csv_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

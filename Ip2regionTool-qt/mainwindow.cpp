@@ -50,6 +50,14 @@ void MainWindow::on_pushButton_output_db_clicked()
     }
 }
 
+void MainWindow::on_pushButton_input_regin_csv_clicked()
+{
+    QString input = QFileDialog::getOpenFileName(this, "", "", "*.csv");
+    if (!input.isEmpty()) {
+        ui->lineEdit_input_regin_csv->setText(input);
+    }
+}
+
 void MainWindow::on_pushButton_DbToTxt_clicked()
 {
     QString db = ui->lineEdit_input_db->text();
@@ -79,6 +87,7 @@ void MainWindow::on_pushButton_TxtToDb_clicked()
     ConvertTxtToDb_Req req;
     req.TxtFileName = txt.toStdString();
     req.DbFileName = db.toStdString();
+    req.RegionCsvFileName = ui->lineEdit_input_regin_csv->text().toStdString();
     req.Merge = ui->checkBox_TxtToDb_merge->isChecked();
     std::string errMsg = ConvertTxtToDb(req);
     if (errMsg.empty()) {
@@ -94,6 +103,8 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     ui->lineEdit_input_txt->clear();
     ui->lineEdit_output_db->clear();
     ui->lineEdit_output_txt->clear();
+    ui->lineEdit_input_regin_csv->clear();
     ui->checkBox_DbToTxt_merge->setChecked(false);
     ui->checkBox_TxtToDb_merge->setChecked(false);
 }
+
