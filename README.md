@@ -5,7 +5,11 @@
   * 支持合并相邻的ip段, 如果相邻ip段的地址信息相等,则合并
 # 下载地址:
   * https://github.com/orestonce/Ip2regionTool/releases
-
+  
+# TODO:
+  * [ ] 使用github actions自动编译发布
+  * [ ] 支持xdb
+  
 ## 程序运行截图
 ![程序截图](image/v1.3_1.png)
 ![程序截图](image/v1.3_2.png)
