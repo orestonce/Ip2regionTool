@@ -7,7 +7,7 @@
   * https://github.com/orestonce/Ip2regionTool/releases
   
 # TODO:
-  * [ ] 使用github actions自动编译发布
+  * [x] 使用github actions自动编译发布
   * [ ] 支持xdb
   
 ## 程序运行截图
