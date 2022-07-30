@@ -49,13 +49,29 @@ jobs:
           qt-static\Qt5.6.3-Windows-x86-MinGW4.9.4-staticFull-20200104\QQtPatcher.exe
           go mod tidy
           go run export/main.go
-          cd untitled1 && qmake && mingw32-make release && cd ..
-          dir untitled1\release
-          dir untitled1
-          dir
-      - name: upload release
+          cd Ip2regionTool-qt && qmake && mingw32-make release && cd ..
+          dir Ip2regionTool-qt\release\Ip2regionTool-qt.exe
+      - name: upload release windows_386_qt
         uses: Guerra24/upload-to-release@v1
         with:
-          name: untitled1-${{ github.ref_name }}.exe
-          path: untitled1\release\untitled1.exe
+          name: Ip2regionTool_qt_windows_386-${{ github.ref_name }}.exe
+          path: Ip2regionTool-qt\release\Ip2regionTool-qt.exe
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: upload release windows_386_cli
+        uses: Guerra24/upload-to-release@v1
+        with:
+          name: Ip2regionTool_cli_windows_386-${{ github.ref_name }}.exe
+          path: bin/Ip2regionTool_cli_windows_386.exe
+          repo-token: ${{ secrets.GITHUB_TOKEN }}    
+      - name: upload release linux_386_cli
+        uses: Guerra24/upload-to-release@v1
+        with:
+          name: Ip2regionTool_cli_linux_386-${{ github.ref_name }}
+          path: bin/Ip2regionTool_cli_linux_386
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+      - name: upload release darwin_amd64_cli
+        uses: Guerra24/upload-to-release@v1
+        with:
+          name: Ip2regionTool_cli_darwin_amd64-${{ github.ref_name }}
+          path: bin/Ip2regionTool_cli_darwin_amd64
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
