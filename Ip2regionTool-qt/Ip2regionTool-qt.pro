@@ -36,3 +36,4 @@ RC_FILE += version.rc
 
 LIBS += -L$$PWD -lip2region-impl
 
+QMAKE_CXXFLAGS += -std=c++11
