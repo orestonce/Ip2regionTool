@@ -58,7 +58,7 @@ func main() {
 		}
 		for _, cfg := range list {
 			name := "Ip2regionTool_cli_" + cfg.GOOS + "_" + cfg.GOARCH + cfg.Ext
-			cmd := exec.Command("go", "build", "-trimpath", "-ldflags", "-s -w", "-o", filepath.Join(wd, "bin", name))
+			cmd := exec.Command("go", "build", "-ldflags", "-s -w", "-o", filepath.Join(wd, "bin", name)) // "-trimpath"
 			cmd.Dir = filepath.Join(wd, "cmd")
 			cmd.Env = append(os.Environ(), "GOOS="+cfg.GOOS)
 			cmd.Env = append(cmd.Env, "GOARCH="+cfg.GOARCH)
