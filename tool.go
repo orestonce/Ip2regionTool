@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/csv"
+	"io/ioutil"
 	"math"
 	"net"
 	"os"
@@ -26,7 +27,7 @@ func ConvertDbToTxt(req ConvertDbToTxt_Req) (errMsg string) {
 	if stat.Size() > 1000*1024*1024 {
 		return "不支持超过1000MB的db文件: " + strconv.Itoa(int(stat.Size()))
 	}
-	dbFileContent, err := os.ReadFile(req.DbFileName)
+	dbFileContent, err := ioutil.ReadFile(req.DbFileName)
 	if err != nil {
 		return "读取db文件失败: " + req.DbFileName + ", " + err.Error()
 	}
@@ -46,7 +47,7 @@ func ConvertDbToTxt(req ConvertDbToTxt_Req) (errMsg string) {
 		return "验证文件数据失败: " + errMsg
 	}
 	data := WriteV1DataTxt(list)
-	err = os.WriteFile(req.TxtFileName, data, 0777)
+	err = ioutil.WriteFile(req.TxtFileName, data, 0777)
 	if err != nil {
 		return "输出文件写入失败: " + err.Error()
 	}
@@ -75,7 +76,7 @@ func ConvertTxtToDb(req ConvertTxtToDb_Req) (errMsg string) {
 			return errMsg
 		}
 	}
-	txtFileContent, err := os.ReadFile(req.TxtFileName)
+	txtFileContent, err := ioutil.ReadFile(req.TxtFileName)
 	if err != nil {
 		return "读取db文件失败: " + req.TxtFileName + ", " + err.Error()
 	}
@@ -101,7 +102,7 @@ func ConvertTxtToDb(req ConvertTxtToDb_Req) (errMsg string) {
 		return "验证文件数据失败: " + errMsg
 	}
 	data := WriteV1DataBlob(list)
-	err = os.WriteFile(req.DbFileName, data, 0777)
+	err = ioutil.WriteFile(req.DbFileName, data, 0777)
 	if err != nil {
 		return "输出文件写入失败: " + err.Error()
 	}
@@ -109,7 +110,7 @@ func ConvertTxtToDb(req ConvertTxtToDb_Req) (errMsg string) {
 }
 
 func ReadGlobalRegionMap(regionCsv string) (globalRegionMap map[string]uint32, errMsg string) {
-	regionData, err := os.ReadFile(regionCsv)
+	regionData, err := ioutil.ReadFile(regionCsv)
 	if err != nil {
 		return nil, "读取region.csv失败: " + err.Error()
 	}

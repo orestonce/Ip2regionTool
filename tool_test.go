@@ -2,7 +2,7 @@ package Ip2regionTool
 
 import (
 	"encoding/json"
-	"os"
+	"io/ioutil"
 	"testing"
 )
 
@@ -26,8 +26,8 @@ func TestReadGlobalRegionMap(t *testing.T) {
 		t.Fatal(errMsg)
 		return
 	}
-	list1 := Must_ReadV1DataBlob_File("testdata/ip2region.conv.db")	// 转换出来的db
-	list2 := Must_ReadV1DataBlob_File("testdata/ip2region.db")			// ip2region 原版db
+	list1 := Must_ReadV1DataBlob_File("testdata/ip2region.conv.db") // 转换出来的db
+	list2 := Must_ReadV1DataBlob_File("testdata/ip2region.db")      // ip2region 原版db
 	Must_ListEqual(t, list1, list2)
 }
 
@@ -35,7 +35,7 @@ func Must_ListEqual(t *testing.T, list1 []IpRangeItem, list2 []IpRangeItem) {
 	if len(list1) != len(list2) {
 		panic("len(list1) != len(list2)")
 	}
-	for idx :=0; idx < len(list1); idx ++ {
+	for idx := 0; idx < len(list1); idx++ {
 		a, b := list1[idx], list2[idx]
 		if a.LowU32 != b.LowU32 || a.HighU32 != b.HighU32 || a.Attach != b.Attach || a.CityId != b.CityId {
 			ab, _ := json.Marshal(a)
@@ -46,7 +46,7 @@ func Must_ListEqual(t *testing.T, list1 []IpRangeItem, list2 []IpRangeItem) {
 }
 
 func Must_ReadV1DataBlob_File(fileName string) (list []IpRangeItem) {
-	data, err := os.ReadFile(fileName)
+	data, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		panic(err)
 	}
