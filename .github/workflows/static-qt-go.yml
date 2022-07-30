@@ -42,7 +42,7 @@ jobs:
         uses: actions/setup-go@v3.2.1
         with:
           # The Go version to download (if necessary) and use. Supports semver spec and ranges.
-          go-version: 1.18 # optional    
+          go-version: 1.12.17 # optional
       - name: set env    
         run: |
           $env:Path="$PWD\qt-static\Qt5.6.3-Windows-x86-MinGW4.9.4-staticFull-20200104\bin;$PWD\qt-static\mingw32\bin;$env:Path"
