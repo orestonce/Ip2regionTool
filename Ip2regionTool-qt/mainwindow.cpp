@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->setTxtToXdb_IsRuning(false);
 }
 
 MainWindow::~MainWindow()
@@ -71,10 +72,10 @@ void MainWindow::on_pushButton_DbToTxt_clicked()
     req.Merge = ui->checkBox_DbToTxt_merge->isChecked();
     std::string errMsg = ConvertDbToTxt(req);
     if (errMsg.empty()) {
-        QMessageBox::about(this, "成功", "转换成功!");
+        Toast::Instance()->SetSuccess("转换成功!");
         return;
     }
-    QMessageBox::warning(this, "错误", QString::fromStdString(errMsg));
+    Toast::Instance()->SetError(QString::fromStdString(errMsg));
 }
 
 void MainWindow::on_pushButton_TxtToDb_clicked()
@@ -91,10 +92,10 @@ void MainWindow::on_pushButton_TxtToDb_clicked()
     req.Merge = ui->checkBox_TxtToDb_merge->isChecked();
     std::string errMsg = ConvertTxtToDb(req);
     if (errMsg.empty()) {
-        QMessageBox::about(this, "成功", "转换成功!");
+        Toast::Instance()->SetSuccess("转换成功!");
         return;
     }
-    QMessageBox::warning(this, "错误", QString::fromStdString(errMsg));
+    Toast::Instance()->SetError(QString::fromStdString(errMsg));
 }
 
 void MainWindow::on_tabWidget_currentChanged(int index)
@@ -108,3 +109,58 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     ui->checkBox_TxtToDb_merge->setChecked(false);
 }
 
+
+void MainWindow::on_pushButton_xdb_srcFile_clicked()
+{
+    QString input = QFileDialog::getOpenFileName(this, "", "", "*.txt");
+    if (!input.isEmpty()) {
+        ui->lineEdit_xdb_srcFile->setText(input);
+    }
+}
+
+void MainWindow::on_pushButton_xdb_dstFile_clicked()
+{
+    QString output = QFileDialog::getSaveFileName(this, "",  "", "*.xdb");
+    if (!output.isEmpty()) {
+        ui->lineEdit_xdb_dstFile->setText(output);
+    }
+}
+
+void MainWindow::on_pushButton_xdb_start_clicked()
+{
+    TxtToXdbReq req;
+    req.SrcFile = ui->lineEdit_xdb_srcFile->text().toStdString();
+    req.DstFile = ui->lineEdit_xdb_dstFile->text().toStdString();
+    if (req.SrcFile.empty() || req.DstFile.empty() || ui->lineEdit_xdb_srcFile->isEnabled() == false) {
+        return;
+    }
+    this->setTxtToXdb_IsRuning(true);
+
+    req.IndexPolicyS = ui->comboBox_xdb_indexPolicy->currentText().toStdString();
+    m_syncUi.AddRunFnOn_OtherThread([=](){
+        std::string errMsg = TxtToXdb(req);
+        m_syncUi.AddRunFnOn_UiThread([=](){
+            this->setTxtToXdb_IsRuning(false);
+            if (errMsg.empty()) {
+                Toast::Instance()->SetSuccess("转换成功");
+                return;
+            }
+            Toast::Instance()->SetError("失败 " + QString::fromStdString(errMsg));
+        });
+    });
+}
+
+void MainWindow::setTxtToXdb_IsRuning(bool runing)
+{
+    ui->lineEdit_xdb_srcFile->setEnabled(runing == false);
+    ui->lineEdit_xdb_dstFile->setEnabled(runing == false);
+    ui->comboBox_xdb_indexPolicy->setEnabled(runing == false);
+    ui->pushButton_xdb_dstFile->setEnabled(runing == false);
+    ui->pushButton_xdb_srcFile->setEnabled(runing == false);
+    ui->pushButton_xdb_start->setEnabled(runing == false);
+    if (runing) {
+        ui->pushButton_xdb_start->setText("正在转换...");
+    } else {
+        ui->pushButton_xdb_start->setText("开始转换");
+    }
+}
