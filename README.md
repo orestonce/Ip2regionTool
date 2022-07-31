@@ -9,9 +9,9 @@
   
 # TODO:
   * [x] 使用github actions自动编译发布
-  * [ ] 支持xdb
+  * [x] 支持xdb
   
 ## 程序运行截图
-![程序截图](image/v1.3_1.png)
-![程序截图](image/v1.3_2.png)
-![程序截图](image/v1.3_3.png)
+![程序截图](image/1.png)
+![程序截图](image/2.png)
+![程序截图](image/3.png)
