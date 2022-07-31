@@ -16,10 +16,13 @@ import (
 func main() {
 	ctx := go2cpp.NewGo2cppContext(go2cpp.NewGo2cppContext_Req{
 		CppBaseName:                 "ip2region",
-		EnableQtClass_RunOnUiThread: false,
+		EnableQtClass_RunOnUiThread: true,
+		EnableQtClass_Toast:         true,
 	})
 	ctx.Generate1(Ip2regionTool.ConvertDbToTxt)
 	ctx.Generate1(Ip2regionTool.ConvertTxtToDb)
+	ctx.Generate1(Ip2regionTool.TxtToXdb)
+
 	if os.Getenv("GITHUB_ACTIONS") == "" { // 正常编译
 		ctx.MustCreateAmd64LibraryInDir("Ip2regionTool-qt")
 	} else { // github actions 编译

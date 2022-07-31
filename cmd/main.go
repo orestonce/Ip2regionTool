@@ -61,4 +61,27 @@ func init() {
 	TxtToDbCmd.Flags().StringVarP(&regionCsvvFileName, "region", "", "", "")
 	TxtToDbCmd.Flags().BoolVarP(&merge, "merge", "", true, "")
 	rootCmd.AddCommand(TxtToDbCmd)
+
+	var srcFile string
+	var dstFile string
+	var indexPolicy string
+
+	TxtToXdbCmd := &cobra.Command{
+		Use: "TxtToXdb",
+		Run: func(cmd *cobra.Command, args []string) {
+			errMsg := Ip2regionTool.TxtToXdb(Ip2regionTool.TxtToXdbReq{
+				SrcFile:      srcFile,
+				DstFile:      dstFile,
+				IndexPolicyS: indexPolicy,
+			})
+			if errMsg != "" {
+				fmt.Println(errMsg)
+				os.Exit(-1)
+			}
+		},
+	}
+	TxtToXdbCmd.Flags().StringVarP(&srcFile, "srcFile", "", "", "")
+	TxtToXdbCmd.Flags().StringVarP(&dstFile, "dstFile", "", "", "")
+	TxtToXdbCmd.Flags().StringVarP(&indexPolicy, "indexPolicy", "", "", "[vector/btree]")
+	rootCmd.AddCommand(TxtToXdbCmd)
 }
