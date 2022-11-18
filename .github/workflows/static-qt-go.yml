@@ -18,7 +18,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - name: install qt static
-        uses: orestonce/install-qt-static@v0.2.7
+        uses: orestonce/install-qt-static@v0.2.8
         with:
           version: Qt5.6.3-Windows-x86-MinGW4.9.4-staticFull-20200104
       - name: Setup Go environment
