@@ -18,7 +18,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - name: install qt static
-        uses: orestonce/install-qt-static@v0.2.8
+        uses: orestonce/install-qt-static@v0.2.9
         with:
           version: Qt5.6.3-Windows-x86-MinGW4.9.4-staticFull-20200104
       - name: Setup Go environment
@@ -28,8 +28,6 @@ jobs:
           go-version: 1.12.17 # optional
       - name: set env    
         run: |
-          $env:Path="$PWD\qt-static\Qt5.6.3-Windows-x86-MinGW4.9.4-staticFull-20200104\bin;$PWD\qt-static\mingw32\bin;$env:Path"
-          qt-static\Qt5.6.3-Windows-x86-MinGW4.9.4-staticFull-20200104\QQtPatcher.exe
           go mod tidy
           go run export/main.go
           cd Ip2regionTool-qt && qmake && mingw32-make release && cd ..
