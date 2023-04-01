@@ -60,7 +60,7 @@ func ConvertDbToTxt(req ConvertDbToTxt_Req) (errMsg string) {
 	errMsg = VerifyIpRangeList(VerifyIpRangeListRequest{
 		DataInfoList:     list,
 		VerifyFullUint32: true,
-		VerifyFiled7:     true,
+		VerifyFiled7:     req.DbVersion == 1, // 只有版本1才需要验证字段数为7
 	})
 	if errMsg != `` {
 		return "验证文件数据失败: " + errMsg
