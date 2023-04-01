@@ -20,6 +20,7 @@ func main() {
 		EnableQtClass_Toast:         true,
 	})
 	ctx.Generate1(Ip2regionTool.ConvertDbToTxt)
+	ctx.Generate1(Ip2regionTool.GetDbVersionByName)
 	ctx.Generate1(Ip2regionTool.ConvertTxtToDb)
 	ctx.Generate1(Ip2regionTool.TxtToXdb)
 

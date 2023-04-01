@@ -17,9 +17,23 @@ type ConvertDbToTxt_Req struct {
 	DbFileName  string
 	TxtFileName string
 	Merge       bool
+	DbVersion   int
+}
+
+func GetDbVersionByName(name string) int {
+	if strings.HasSuffix(strings.ToLower(name), ".db") {
+		return 1
+	}
+	if strings.HasSuffix(strings.ToLower(name), ".xdb") {
+		return 2
+	}
+	return 1
 }
 
 func ConvertDbToTxt(req ConvertDbToTxt_Req) (errMsg string) {
+	if req.DbVersion == 0 {
+		req.DbVersion = GetDbVersionByName(req.DbFileName)
+	}
 	stat, err := os.Stat(req.DbFileName)
 	if err != nil {
 		return "文件状态错误: " + req.DbFileName + "," + err.Error()
@@ -31,7 +45,12 @@ func ConvertDbToTxt(req ConvertDbToTxt_Req) (errMsg string) {
 	if err != nil {
 		return "读取db文件失败: " + req.DbFileName + ", " + err.Error()
 	}
-	list, errMsg := ReadV1DataBlob(dbFileContent)
+	var list []IpRangeItem
+	if req.DbVersion == 1 {
+		list, errMsg = ReadV1DataBlob(dbFileContent)
+	} else {
+		list, errMsg = ReadV2DataBlob(dbFileContent)
+	}
 	if errMsg != `` {
 		return "文件数据错误: " + errMsg
 	}

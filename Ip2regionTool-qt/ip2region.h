@@ -12,9 +12,11 @@ struct ConvertDbToTxt_Req{
 	std::string DbFileName;
 	std::string TxtFileName;
 	bool Merge;
-	ConvertDbToTxt_Req(): Merge(false){}
+	int32_t DbVersion;
+	ConvertDbToTxt_Req(): Merge(false),DbVersion(0){}
 };
 std::string ConvertDbToTxt(ConvertDbToTxt_Req in0);
+int32_t GetDbVersionByName(std::string in0);
 struct ConvertTxtToDb_Req{
 	std::string TxtFileName;
 	std::string DbFileName;

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -271,7 +272,7 @@ func (m *Maker) Start() error {
 
 		var segList = seg.Split()
 		for _, s := range segList {
-			pos, err := m.dstHandle.Seek(0, 1)
+			pos, err := m.dstHandle.Seek(0, io.SeekCurrent)
 			if err != nil {
 				return fmt.Errorf("seek to segment index block: %w", err)
 			}
@@ -311,7 +312,7 @@ func (m *Maker) Start() error {
 	// synchronized the segment index info
 	binary.LittleEndian.PutUint32(indexBuff, uint32(startIndexPtr))
 	binary.LittleEndian.PutUint32(indexBuff[4:], uint32(endIndexPtr))
-	_, err = m.dstHandle.Seek(8, 0)
+	_, err = m.dstHandle.Seek(8, io.SeekStart)
 	if err != nil {
 		return fmt.Errorf("seek segment index ptr: %w", err)
 	}

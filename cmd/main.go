@@ -19,6 +19,7 @@ func init() {
 	var dbFileName string
 	var txtFileName string
 	var merge bool
+	var dbVersion int
 
 	DbToTxtCmd := &cobra.Command{
 		Use: "DbToTxt",
@@ -27,6 +28,7 @@ func init() {
 				DbFileName:  dbFileName,
 				TxtFileName: txtFileName,
 				Merge:       merge,
+				DbVersion:   dbVersion,
 			})
 			if errMsg != `` {
 				fmt.Println(errMsg)
@@ -36,6 +38,7 @@ func init() {
 	}
 	DbToTxtCmd.Flags().StringVarP(&txtFileName, `txt`, ``, "", ``)
 	DbToTxtCmd.Flags().StringVarP(&dbFileName, `db`, ``, "", ``)
+	DbToTxtCmd.Flags().IntVarP(&dbVersion, "dbversion", "", 0, "0 -> auto detect, 1 -> v1, 2 -> v2")
 	DbToTxtCmd.Flags().BoolVarP(&merge, "merge", "", true, "")
 	rootCmd.AddCommand(DbToTxtCmd)
 

@@ -20,9 +20,15 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_input_db_clicked()
 {
-    QString input = QFileDialog::getOpenFileName(this, "",  "", "*.db");
+    QString input = QFileDialog::getOpenFileName(this, "",  "", "*.db *.xdb");
     if (!input.isEmpty()) {
         ui->lineEdit_input_db->setText(input);
+        int version = GetDbVersionByName(input.toStdString());
+        if (version==1) {
+            ui->radioButton_dbv1->setChecked(true);
+        } else {
+            ui->radioButton_dbv2->setChecked(true);
+        }
     }
 }
 
@@ -67,6 +73,11 @@ void MainWindow::on_pushButton_DbToTxt_clicked()
         return;
     }
     ConvertDbToTxt_Req req;
+    if (ui->radioButton_dbv1->isChecked()) {
+        req.DbVersion = 1;
+    } else {
+        req.DbVersion = 2;
+    }
     req.DbFileName = db.toStdString();
     req.TxtFileName = txt.toStdString();
     req.Merge = ui->checkBox_DbToTxt_merge->isChecked();

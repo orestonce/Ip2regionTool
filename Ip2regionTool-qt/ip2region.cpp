@@ -6,7 +6,7 @@
 
 #line 1 "cgo-builtin-export-prolog"
 
-#include <stddef.h> /* for ptrdiff_t below */
+#include <stddef.h>
 
 #ifndef GO_CGO_EXPORT_PROLOGUE_H
 #define GO_CGO_EXPORT_PROLOGUE_H
@@ -41,11 +41,17 @@ typedef long long GoInt64;
 typedef unsigned long long GoUint64;
 typedef GoInt64 GoInt;
 typedef GoUint64 GoUint;
-typedef __SIZE_TYPE__ GoUintptr;
+typedef size_t GoUintptr;
 typedef float GoFloat32;
 typedef double GoFloat64;
+#ifdef _MSC_VER
+#include <complex.h>
+typedef _Fcomplex GoComplex64;
+typedef _Dcomplex GoComplex128;
+#else
 typedef float _Complex GoComplex64;
 typedef double _Complex GoComplex128;
+#endif
 
 /*
   static assertion to make sure the file is being used on architecture
@@ -70,6 +76,7 @@ extern "C" {
 #endif
 
 extern __declspec(dllexport) void Go2cppFn_ConvertDbToTxt(char* in, int inLen, char** out, int* outLen);
+extern __declspec(dllexport) void Go2cppFn_GetDbVersionByName(char* in, int inLen, char** out, int* outLen);
 extern __declspec(dllexport) void Go2cppFn_ConvertTxtToDb(char* in, int inLen, char** out, int* outLen);
 extern __declspec(dllexport) void Go2cppFn_TxtToXdb(char* in, int inLen, char** out, int* outLen);
 
@@ -82,26 +89,34 @@ std::string ConvertDbToTxt(ConvertDbToTxt_Req in0){
 	std::string in;
 	{
 		{
-			uint32_t tmp9 = in0.DbFileName.length();
-			char tmp10[4];
-			tmp10[0] = (uint32_t(tmp9) >> 24) & 0xFF;
-			tmp10[1] = (uint32_t(tmp9) >> 16) & 0xFF;
-			tmp10[2] = (uint32_t(tmp9) >> 8) & 0xFF;
-			tmp10[3] = (uint32_t(tmp9) >> 0) & 0xFF;
-			in.append(tmp10, 4);
+			uint32_t tmp10 = in0.DbFileName.length();
+			char tmp11[4];
+			tmp11[0] = (uint32_t(tmp10) >> 24) & 0xFF;
+			tmp11[1] = (uint32_t(tmp10) >> 16) & 0xFF;
+			tmp11[2] = (uint32_t(tmp10) >> 8) & 0xFF;
+			tmp11[3] = (uint32_t(tmp10) >> 0) & 0xFF;
+			in.append(tmp11, 4);
 			in.append(in0.DbFileName);
 		}
 		{
-			uint32_t tmp11 = in0.TxtFileName.length();
-			char tmp12[4];
-			tmp12[0] = (uint32_t(tmp11) >> 24) & 0xFF;
-			tmp12[1] = (uint32_t(tmp11) >> 16) & 0xFF;
-			tmp12[2] = (uint32_t(tmp11) >> 8) & 0xFF;
-			tmp12[3] = (uint32_t(tmp11) >> 0) & 0xFF;
-			in.append(tmp12, 4);
+			uint32_t tmp12 = in0.TxtFileName.length();
+			char tmp13[4];
+			tmp13[0] = (uint32_t(tmp12) >> 24) & 0xFF;
+			tmp13[1] = (uint32_t(tmp12) >> 16) & 0xFF;
+			tmp13[2] = (uint32_t(tmp12) >> 8) & 0xFF;
+			tmp13[3] = (uint32_t(tmp12) >> 0) & 0xFF;
+			in.append(tmp13, 4);
 			in.append(in0.TxtFileName);
 		}
 		in.append((char*)(&in0.Merge), 1);
+		{
+			char tmp14[4];
+			tmp14[0] = (uint32_t(in0.DbVersion) >> 24) & 0xFF;
+			tmp14[1] = (uint32_t(in0.DbVersion) >> 16) & 0xFF;
+			tmp14[2] = (uint32_t(in0.DbVersion) >> 8) & 0xFF;
+			tmp14[3] = (uint32_t(in0.DbVersion) >> 0) & 0xFF;
+			in.append(tmp14, 4);
+		}
 	}
 	char *out = NULL;
 	int outLen = 0;
@@ -109,15 +124,46 @@ std::string ConvertDbToTxt(ConvertDbToTxt_Req in0){
 	std::string retValue;
 	int outIdx = 0;
 	{
-		uint32_t tmp13 = 0;
-		uint32_t tmp14 = uint32_t(uint8_t(out[outIdx+0]) << 24);
-		uint32_t tmp15 = uint32_t(uint8_t(out[outIdx+1]) << 16);
-		uint32_t tmp16 = uint32_t(uint8_t(out[outIdx+2]) << 8);
-		uint32_t tmp17 = uint32_t(uint8_t(out[outIdx+3]) << 0);
-		tmp13 = tmp14 | tmp15 | tmp16 | tmp17;
+		uint32_t tmp15 = 0;
+		uint32_t tmp16 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+		uint32_t tmp17 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+		uint32_t tmp18 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+		uint32_t tmp19 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+		tmp15 = tmp16 | tmp17 | tmp18 | tmp19;
 		outIdx+=4;
-		retValue = std::string(out+outIdx, out+outIdx+tmp13);
-		outIdx+=tmp13;
+		retValue = std::string(out+outIdx, out+outIdx+tmp15);
+		outIdx+=tmp15;
+	}
+	if (out != NULL) {
+		free(out);
+	}
+	return retValue;
+}
+
+int32_t GetDbVersionByName(std::string in0){
+	std::string in;
+	{
+		uint32_t tmp5 = in0.length();
+		char tmp6[4];
+		tmp6[0] = (uint32_t(tmp5) >> 24) & 0xFF;
+		tmp6[1] = (uint32_t(tmp5) >> 16) & 0xFF;
+		tmp6[2] = (uint32_t(tmp5) >> 8) & 0xFF;
+		tmp6[3] = (uint32_t(tmp5) >> 0) & 0xFF;
+		in.append(tmp6, 4);
+		in.append(in0);
+	}
+	char *out = NULL;
+	int outLen = 0;
+	Go2cppFn_GetDbVersionByName((char *)in.data(), in.length(), &out, &outLen);
+	int32_t retValue;
+	int outIdx = 0;
+	{
+		uint32_t tmp7 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+		uint32_t tmp8 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+		uint32_t tmp9 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+		uint32_t tmp10 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+		retValue = tmp7 | tmp8 | tmp9 | tmp10;
+		outIdx+=4;
 	}
 	if (out != NULL) {
 		free(out);
