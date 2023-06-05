@@ -17,3 +17,7 @@
 ![程序截图](image/1.png)
 ![程序截图](image/2.png)
 ![程序截图](image/3.png)
+
+* TODO
+  * [ ] ipip.net 数据格式支持 *.ipx *.ipdb
+  * [ ] geoip 数据格式支持 
