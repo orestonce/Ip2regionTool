@@ -17,7 +17,7 @@
     * [ ] 支持 ipip.net 的ipdb格式
     * [ ] 测试 ipip.net 数据
     * [ ] Linsoul2014v1 支持 region.csv 计算城市id
-    * [ ] Linsoul2014v2支持2种索引模式 
+    * [ ] Linsoul2014v2 支持2种索引模式 
     * [ ] 合并多个数据库，例如GeoLite2-City.mmdb 和 GeoLite2-ASN.mmdb 合并，得到既有城市信息又有ASN信息的最终数据
   * 二进制需要的运行环境:
     * 提供windows_x64、linux_x64、darwin_amd64 三种版本的命令行二进制

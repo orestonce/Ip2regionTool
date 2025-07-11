@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"net"
 	"sort"
+	"strings"
 )
 
 type IpRangeItem struct {
@@ -62,9 +63,11 @@ func RegisterDbFormat(format DBFormat) {
 }
 
 func GetDbFormatByType(desc string) DBFormat {
+	desc = strings.ToLower(desc)
+
 	for _, one := range gDbFormatList {
 		t := one.GetType()
-		if t.Desc == desc || t.NameForCmd == desc {
+		if strings.ToLower(t.Desc) == desc || strings.ToLower(t.NameForCmd) == desc {
 			return one
 		}
 	}
