@@ -43,7 +43,7 @@ func (DbFormatLinsoul2014v2) ReadData(data []byte) (list []dbformat.IpRangeItem,
 		if dataPtr+dataLen > len(data) {
 			return nil, errors.New("dataPtr/dataLen error: " + strconv.Itoa(dataPtr) + ", " + strconv.Itoa(dataLen))
 		}
-		item.Attach = string(data[dataPtr : dataPtr+dataLen])
+		item.AttachObj = decodeIpRangeAttach(string(data[dataPtr : dataPtr+dataLen]))
 		list = append(list, item)
 	}
 	return list, nil

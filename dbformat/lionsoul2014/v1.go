@@ -62,23 +62,26 @@ func (DbFormatLinsoul2014v1) ReadData(data []byte) (list []dbformat.IpRangeItem,
 			attach = string(data[ptr+4 : ptr+dataLen])
 			//cityId = binary.LittleEndian.Uint32(data[ptr:])
 		}
-		temp := strings.Split(attach, "|")
-		var attachObj dbformat.IpRangeAttach
-		if len(temp) >= 5 {
-			attachObj.Country = temp[0]
-			attachObj.Province = temp[2]
-			attachObj.City = temp[3]
-			attachObj.ISP = temp[4]
-		}
 		dataInfoList = append(dataInfoList, dbformat.IpRangeItem{
 			LowU32:  getUint32(data, idx),
 			HighU32: getUint32(data, idx+4),
 			//Attach:    attach,
-			AttachObj: attachObj,
+			AttachObj: decodeIpRangeAttach(attach),
 			//CityId:  cityId,
 		})
 	}
 	return dataInfoList, nil
+}
+
+func decodeIpRangeAttach(attach string) (attachObj dbformat.IpRangeAttach) {
+	temp := strings.Split(attach, "|")
+	if len(temp) >= 5 {
+		attachObj.Country = temp[0]
+		attachObj.Province = temp[2]
+		attachObj.City = temp[3]
+		attachObj.ISP = temp[4]
+	}
+	return attachObj
 }
 
 func (d DbFormatLinsoul2014v1) FormatAttach(attach dbformat.IpRangeAttach) (value string, err error) {
