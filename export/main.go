@@ -47,7 +47,7 @@ func main() {
 		var list = []buildCfg{
 			{
 				GOOS:   "linux",
-				GOARCH: "386",
+				GOARCH: "amd64",
 			},
 			{
 				GOOS:   "darwin",
@@ -55,7 +55,7 @@ func main() {
 			},
 			{
 				GOOS:   "windows",
-				GOARCH: "386",
+				GOARCH: "amd64",
 				Ext:    ".exe",
 			},
 		}
