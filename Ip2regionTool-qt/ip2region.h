@@ -8,29 +8,25 @@
 //Qt Creator 需要在xxx.pro 内部增加静态库的链接声明
 //LIBS += -L$$PWD -lip2region-impl
 
-struct ConvertDbToTxt_Req{
-	std::string DbFileName;
-	std::string TxtFileName;
-	bool Merge;
-	int32_t DbVersion;
-	ConvertDbToTxt_Req(): Merge(false),DbVersion(0){}
+struct ConvertDbReq{
+	std::string FromName;
+	std::string FromType;
+	std::string ToName;
+	std::string ToType;
+	bool VerifyFullUint32;
+	bool FillFullUint32;
+	bool MergeIpRange;
+	ConvertDbReq(): VerifyFullUint32(false),FillFullUint32(false),MergeIpRange(false){}
 };
-std::string ConvertDbToTxt(ConvertDbToTxt_Req in0);
-int32_t GetDbVersionByName(std::string in0);
-struct ConvertTxtToDb_Req{
-	std::string TxtFileName;
-	std::string DbFileName;
-	std::string RegionCsvFileName;
-	bool Merge;
-	ConvertTxtToDb_Req(): Merge(false){}
+std::string ConvertDb(ConvertDbReq in0);
+struct DbFormatType{
+	int32_t ShowPriority;
+	std::string Desc;
+	std::string ExtName;
+	bool SupportWrite;
+	DbFormatType(): ShowPriority(0),SupportWrite(false){}
 };
-std::string ConvertTxtToDb(ConvertTxtToDb_Req in0);
-struct TxtToXdbReq{
-	std::string SrcFile;
-	std::string DstFile;
-	std::string IndexPolicyS;
-};
-std::string TxtToXdb(TxtToXdbReq in0);
+std::vector<DbFormatType> GetDbTypeList();
 
 #include <QObject>
 #include <QVector>

@@ -1,41 +1,11 @@
-package Ip2regionTool
+package lionsoul2014
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 type Segment struct {
 	StartIP uint32
 	EndIP   uint32
 	Region  string
-}
-
-func SegmentFrom(seg string) (*Segment, error) {
-	var ps = strings.SplitN(seg, "|", 3)
-	if len(ps) != 3 {
-		return nil, fmt.Errorf("invalid ip segment `%s`", seg)
-	}
-
-	sip, err := CheckIP(ps[0])
-	if err != nil {
-		return nil, fmt.Errorf("check start ip `%s`: %s", ps[0], err)
-	}
-
-	eip, err := CheckIP(ps[1])
-	if err != nil {
-		return nil, fmt.Errorf("check end ip `%s`: %s", ps[1], err)
-	}
-
-	if sip > eip {
-		return nil, fmt.Errorf("start ip(%s) should not be greater than end ip(%s)", ps[0], ps[1])
-	}
-
-	return &Segment{
-		StartIP: sip,
-		EndIP:   eip,
-		Region:  ps[2],
-	}, nil
 }
 
 // Split the segment based on the pre-two bytes
@@ -90,4 +60,8 @@ func (s *Segment) Split() []*Segment {
 
 func (s *Segment) String() string {
 	return Long2IP(s.StartIP) + "|" + Long2IP(s.EndIP) + "|" + s.Region
+}
+
+func Long2IP(ip uint32) string {
+	return fmt.Sprintf("%d.%d.%d.%d", (ip>>24)&0xFF, (ip>>16)&0xFF, (ip>>8)&0xFF, (ip>>0)&0xFF)
 }

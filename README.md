@@ -1,23 +1,28 @@
 # ip2region 数据转换工具
   * 来源项目: https://github.com/lionsoul2014/ip2region
-  * 旧版的db数据格式:
-    * 支持 txt -> db, db -> txt
-    * 支持 region.csv 计算城市id
+  * 支持的数据格式
+    * 读写：txt,纯文本格式
+    * 读写：Linsoul2014v1, Linsoul2014第一版db格式
+    * 读写：Linsoul2014v2, Linsoul2014 第二版xdb格式
+    * 读：IpipdnetDat, ipip.net的dat格式数据 (未测试)
+    * 读：IpipdnetDatX, ipip.net的datx格式数据 (未测试)
+    * 读：Maxmind, maxmind的mmdb格式数据
+  * 支持的操作
+    * 以上数据格式的互相转换
     * 支持合并相邻的ip段, 如果相邻ip段的地址信息相等,则合并
-  * 新版的 [xdb](https://mp.weixin.qq.com/s?__biz=MzU4MDc2MzQ5OA==&mid=2247483696&idx=1&sn=6e9e138e86cf18245656c54ff4be3129&chksm=fd50ab35ca2722239ae7c0bb08efa44f499110c810227cbad3a16f36ebc1c2afc58eb464a57c#rd) 数据格式
-    * 支持 txt -> xdb, 包括2种索引模式
-    * 支持 xdb -> txt
+    * 验证全段ip
+    * 填充全段ip中的缺失部分
+    * 合并相邻相同内容的ip段
+  * 下一步计划 
+    * [ ] 支持 ipip.net 的ipdb格式
+    * [ ] 测试 ipip.net 数据
+    * [ ] Linsoul2014v1 支持 region.csv 计算城市id
+    * [ ] Linsoul2014v2支持2种索引模式 
+    * [ ] 合并多个数据库，例如GeoLite2-City.mmdb 和 GeoLite2-ASN.mmdb 合并，得到既有城市信息又有ASN信息的最终数据
   * 二进制需要的运行环境:
-    * 提供windows_386、linux_386、darwin_amd64 三种版本的命令行二进制
-    * 提供 windows Qt界面的二进制, 使用qt5.6/go1.12.17编译, 支持windows xp运行二进制  
+    * 提供windows_x64、linux_x64、darwin_amd64 三种版本的命令行二进制
 # 下载地址:
   * https://github.com/orestonce/Ip2regionTool/releases
   
 ## 程序运行截图
-![程序截图](image/1.png)
-![程序截图](image/2.png)
-![程序截图](image/3.png)
-
-* TODO
-  * [ ] ipip.net 数据格式支持 *.ipx *.ipdb
-  * [ ] geoip 数据格式支持 
+![程序截图](image/4.png)

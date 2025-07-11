@@ -1,12 +1,9 @@
-package Ip2regionTool
+package lionsoul2014
 
 import (
-	"bufio"
 	"encoding/binary"
 	"fmt"
-	"io"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -68,48 +65,18 @@ const SegmentIndexSize = 14
 const VectorIndexLength = VectorIndexRows * VectorIndexCols * VectorIndexSize
 
 type Maker struct {
-	srcHandle *os.File
 	dstHandle *os.File
+	dstBuffer []byte
 
 	indexPolicy IndexPolicy
 	segments    []*Segment
-	regionPool  map[string]uint32
 	vectorIndex []byte
 }
 
-func NewMaker(policy IndexPolicy, srcFile string, dstFile string) (*Maker, error) {
-	// open the source file with READONLY mode
-	srcHandle, err := os.OpenFile(srcFile, os.O_RDONLY, 0600)
-	if err != nil {
-		return nil, fmt.Errorf("open source file `%s`: %w", srcFile, err)
-	}
-
-	// open the destination file with Read/Write mode
-	dstHandle, err := os.OpenFile(dstFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
-	if err != nil {
-		return nil, fmt.Errorf("open target file `%s`: %w", dstFile, err)
-	}
-
-	return &Maker{
-		srcHandle: srcHandle,
-		dstHandle: dstHandle,
-
-		indexPolicy: policy,
-		segments:    []*Segment{},
-		regionPool:  map[string]uint32{},
-		vectorIndex: make([]byte, VectorIndexLength),
-	}, nil
-}
-
-func (m *Maker) initDbHeader() error {
-
-	_, err := m.dstHandle.Seek(0, 0)
-	if err != nil {
-		return err
-	}
+func (m *Maker) initDbHeader() {
 
 	// make and write the header space
-	var header = make([]byte, 256)
+	var header = make([]byte, HeaderInfoLength)
 
 	// 1, version number
 	binary.LittleEndian.PutUint16(header, uint16(VersionNo))
@@ -126,80 +93,7 @@ func (m *Maker) initDbHeader() error {
 	// 5, index block end ptr
 	binary.LittleEndian.PutUint32(header[12:], uint32(0))
 
-	_, err = m.dstHandle.Write(header)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *Maker) loadSegments() error {
-	var last *Segment = nil
-
-	var scanner = bufio.NewScanner(m.srcHandle)
-	scanner.Split(bufio.ScanLines)
-	for scanner.Scan() {
-		var l = strings.TrimSpace(strings.TrimSuffix(scanner.Text(), "\n"))
-
-		var ps = strings.SplitN(l, "|", 3)
-		if len(ps) != 3 {
-			return fmt.Errorf("invalid ip segment line `%s`", l)
-		}
-
-		sip, err := CheckIP(ps[0])
-		if err != nil {
-			return fmt.Errorf("check start ip `%s`: %s", ps[0], err)
-		}
-
-		eip, err := CheckIP(ps[1])
-		if err != nil {
-			return fmt.Errorf("check end ip `%s`: %s", ps[1], err)
-		}
-
-		if sip > eip {
-			return fmt.Errorf("start ip(%s) should not be greater than end ip(%s)", ps[0], ps[1])
-		}
-
-		if len(ps[2]) < 1 {
-			return fmt.Errorf("empty region info in segment line `%s`", l)
-		}
-
-		var seg = &Segment{
-			StartIP: sip,
-			EndIP:   eip,
-			Region:  ps[2],
-		}
-
-		// check the continuity of the data segment
-		if last != nil {
-			if last.EndIP+1 != seg.StartIP {
-				return fmt.Errorf("discontinuous data segment: last.eip+1(%d) != seg.sip(%d, %s)", sip, eip, ps[0])
-			}
-		}
-
-		m.segments = append(m.segments, seg)
-		last = seg
-	}
-
-	return nil
-}
-
-// Init the db binary file
-func (m *Maker) Init() error {
-	// init the db header
-	err := m.initDbHeader()
-	if err != nil {
-		return fmt.Errorf("init db header: %w", err)
-	}
-
-	// load all the segments
-	err = m.loadSegments()
-	if err != nil {
-		return fmt.Errorf("load segments: %w", err)
-	}
-
-	return nil
+	m.dstBuffer = header
 }
 
 // refresh the vector index of the specified ip
@@ -216,20 +110,21 @@ func (m *Maker) setVectorIndex(ip uint32, ptr uint32) {
 	}
 }
 
-// Start to make the binary file
+// to make the binary file
 func (m *Maker) Start() error {
 	if len(m.segments) < 1 {
 		return fmt.Errorf("empty segment list")
 	}
 
+	m.initDbHeader()
+
 	// 1, write all the region/data to the binary file
-	_, err := m.dstHandle.Seek(int64(HeaderInfoLength+VectorIndexLength), 0)
-	if err != nil {
-		return fmt.Errorf("seek to data first ptr: %w", err)
-	}
+	m.dstBuffer = append(m.dstBuffer, make([]byte, VectorIndexLength)...)
+
+	regionPool := map[string]uint32{}
 
 	for _, seg := range m.segments {
-		_, has := m.regionPool[seg.Region]
+		_, has := regionPool[seg.Region]
 		if has {
 			continue
 		}
@@ -240,24 +135,17 @@ func (m *Maker) Start() error {
 		}
 
 		// get the first ptr of the next region
-		pos, err := m.dstHandle.Seek(0, 1)
-		if err != nil {
-			return fmt.Errorf("seek to current ptr: %w", err)
-		}
+		pos := len(m.dstBuffer)
+		m.dstBuffer = append(m.dstBuffer, region...)
 
-		_, err = m.dstHandle.Write(region)
-		if err != nil {
-			return fmt.Errorf("write region '%s': %w", seg.Region, err)
-		}
-
-		m.regionPool[seg.Region] = uint32(pos)
+		regionPool[seg.Region] = uint32(pos)
 	}
 
 	// 2, write the index block and cache the super index block
 	var indexBuff = make([]byte, SegmentIndexSize)
 	var counter, startIndexPtr, endIndexPtr = 0, int64(-1), int64(-1)
 	for _, seg := range m.segments {
-		dataPtr, has := m.regionPool[seg.Region]
+		dataPtr, has := regionPool[seg.Region]
 		if !has {
 			return fmt.Errorf("missing ptr cache for region `%s`", seg.Region)
 		}
@@ -272,69 +160,34 @@ func (m *Maker) Start() error {
 
 		var segList = seg.Split()
 		for _, s := range segList {
-			pos, err := m.dstHandle.Seek(0, io.SeekCurrent)
-			if err != nil {
-				return fmt.Errorf("seek to segment index block: %w", err)
-			}
+			pos := len(m.dstBuffer)
 
 			// encode the segment index
 			binary.LittleEndian.PutUint32(indexBuff, s.StartIP)
 			binary.LittleEndian.PutUint32(indexBuff[4:], s.EndIP)
 			binary.LittleEndian.PutUint16(indexBuff[8:], uint16(dataLen))
 			binary.LittleEndian.PutUint32(indexBuff[10:], dataPtr)
-			_, err = m.dstHandle.Write(indexBuff)
-			if err != nil {
-				return fmt.Errorf("write segment index for '%s': %w", s.String(), err)
-			}
+			m.dstBuffer = append(m.dstBuffer, indexBuff...)
 
 			m.setVectorIndex(s.StartIP, uint32(pos))
 			counter++
 
 			// check and record the start index ptr
 			if startIndexPtr == -1 {
-				startIndexPtr = pos
+				startIndexPtr = int64(pos)
 			}
 
-			endIndexPtr = pos
+			endIndexPtr = int64(pos)
 		}
 	}
 
 	// synchronized the vector index block
-	_, err = m.dstHandle.Seek(int64(HeaderInfoLength), 0)
-	if err != nil {
-		return fmt.Errorf("seek vector index first ptr: %w", err)
-	}
-	_, err = m.dstHandle.Write(m.vectorIndex)
-	if err != nil {
-		return fmt.Errorf("write vector index: %w", err)
-	}
+	copy(m.dstBuffer[HeaderInfoLength:], m.vectorIndex)
 
 	// synchronized the segment index info
 	binary.LittleEndian.PutUint32(indexBuff, uint32(startIndexPtr))
 	binary.LittleEndian.PutUint32(indexBuff[4:], uint32(endIndexPtr))
-	_, err = m.dstHandle.Seek(8, io.SeekStart)
-	if err != nil {
-		return fmt.Errorf("seek segment index ptr: %w", err)
-	}
-
-	_, err = m.dstHandle.Write(indexBuff[:8])
-	if err != nil {
-		return fmt.Errorf("write segment index ptr: %w", err)
-	}
-
-	return nil
-}
-
-func (m *Maker) End() error {
-	err := m.dstHandle.Close()
-	if err != nil {
-		return err
-	}
-
-	err = m.srcHandle.Close()
-	if err != nil {
-		return err
-	}
+	copy(m.dstBuffer[8:], indexBuff[:8])
 
 	return nil
 }

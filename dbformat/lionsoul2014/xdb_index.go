@@ -1,4 +1,4 @@
-package Ip2regionTool
+package lionsoul2014
 
 import (
 	"fmt"

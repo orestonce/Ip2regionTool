@@ -10,7 +10,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->setTxtToXdb_IsRuning(false);
+    this->setConv_IsRuning(false);
+    for(auto one : GetDbTypeList())
+    {
+        QString desc = QString::fromStdString(one.Desc);
+        QVariant extName = QString::fromStdString(one.ExtName);
+
+        ui->comboBox_fromType->addItem(desc, extName);
+        if(one.SupportWrite)
+        {
+            ui->comboBox_toType->addItem(desc, extName);
+        }
+    }
 }
 
 MainWindow::~MainWindow()
@@ -18,140 +29,61 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_pushButton_input_db_clicked()
+void MainWindow::setConv_IsRuning(bool runing)
 {
-    QString input = QFileDialog::getOpenFileName(this, "",  "", "*.db *.xdb");
-    if (!input.isEmpty()) {
-        ui->lineEdit_input_db->setText(input);
-        int version = GetDbVersionByName(input.toStdString());
-        if (version==1) {
-            ui->radioButton_dbv1->setChecked(true);
-        } else {
-            ui->radioButton_dbv2->setChecked(true);
-        }
-    }
-}
-
-
-void MainWindow::on_pushButton_output_txt_clicked()
-{
-    QString output = QFileDialog::getSaveFileName(this, "",  "", "*.txt");
-    if (!output.isEmpty()) {
-        ui->lineEdit_output_txt->setText(output);
-    }
-}
-
-void MainWindow::on_pushButton_input_txt_clicked()
-{
-    QString input = QFileDialog::getOpenFileName(this, "",  "", "*.txt");
-    if (!input.isEmpty()) {
-        ui->lineEdit_input_txt->setText(input);
-    }
-}
-
-void MainWindow::on_pushButton_output_db_clicked()
-{
-    QString output = QFileDialog::getSaveFileName(this, "",  "", "*.db");
-    if (!output.isEmpty()) {
-        ui->lineEdit_output_db->setText(output);
-    }
-}
-
-void MainWindow::on_pushButton_input_regin_csv_clicked()
-{
-    QString input = QFileDialog::getOpenFileName(this, "", "", "*.csv");
-    if (!input.isEmpty()) {
-        ui->lineEdit_input_regin_csv->setText(input);
-    }
-}
-
-void MainWindow::on_pushButton_DbToTxt_clicked()
-{
-    QString db = ui->lineEdit_input_db->text();
-    QString txt = ui->lineEdit_output_txt->text();
-    if (db.isEmpty()||txt.isEmpty()) {
-        return;
-    }
-    ConvertDbToTxt_Req req;
-    if (ui->radioButton_dbv1->isChecked()) {
-        req.DbVersion = 1;
+    ui->lineEdit_fromName->setEnabled(runing == false);
+    ui->lineEdit_toName->setEnabled(runing == false);
+    ui->comboBox_fromType->setEnabled(runing == false);
+    ui->comboBox_toType->setEnabled(runing == false);
+    ui->pushButton_fromDir->setEnabled(runing == false);
+    ui->pushButton_toDir->setEnabled(runing == false);
+    ui->checkBox_VerifyFullUint32->setEnabled(runing == false);
+    ui->checkBox_FillFullUint32->setEnabled(runing == false);
+    ui->checkBox_MergeIpRange->setEnabled(runing == false);
+    if (runing) {
+        ui->pushButton_conv->setText("正在转换...");
     } else {
-        req.DbVersion = 2;
+        ui->pushButton_conv->setText("开始转换");
     }
-    req.DbFileName = db.toStdString();
-    req.TxtFileName = txt.toStdString();
-    req.Merge = ui->checkBox_DbToTxt_merge->isChecked();
-    std::string errMsg = ConvertDbToTxt(req);
-    if (errMsg.empty()) {
-        Toast::Instance()->SetSuccess("转换成功!");
-        return;
-    }
-    Toast::Instance()->SetError(QString::fromStdString(errMsg));
 }
 
-void MainWindow::on_pushButton_TxtToDb_clicked()
+void MainWindow::on_pushButton_fromDir_clicked()
 {
-    QString txt = ui->lineEdit_input_txt->text();
-    QString db = ui->lineEdit_output_db->text();
-    if (db.isEmpty()||txt.isEmpty()) {
-        return;
-    }
-    ConvertTxtToDb_Req req;
-    req.TxtFileName = txt.toStdString();
-    req.DbFileName = db.toStdString();
-    req.RegionCsvFileName = ui->lineEdit_input_regin_csv->text().toStdString();
-    req.Merge = ui->checkBox_TxtToDb_merge->isChecked();
-    std::string errMsg = ConvertTxtToDb(req);
-    if (errMsg.empty()) {
-        Toast::Instance()->SetSuccess("转换成功!");
-        return;
-    }
-    Toast::Instance()->SetError(QString::fromStdString(errMsg));
-}
-
-void MainWindow::on_tabWidget_currentChanged(int index)
-{
-    ui->lineEdit_input_db->clear();
-    ui->lineEdit_input_txt->clear();
-    ui->lineEdit_output_db->clear();
-    ui->lineEdit_output_txt->clear();
-    ui->lineEdit_input_regin_csv->clear();
-    ui->checkBox_DbToTxt_merge->setChecked(false);
-    ui->checkBox_TxtToDb_merge->setChecked(false);
-}
-
-
-void MainWindow::on_pushButton_xdb_srcFile_clicked()
-{
-    QString input = QFileDialog::getOpenFileName(this, "", "", "*.txt");
+    QString extName = ui->comboBox_fromType->currentData().toString();
+    QString input = QFileDialog::getOpenFileName(this, "",  "", "("+ extName + ")");
     if (!input.isEmpty()) {
-        ui->lineEdit_xdb_srcFile->setText(input);
+        ui->lineEdit_fromName->setText(input);
     }
 }
 
-void MainWindow::on_pushButton_xdb_dstFile_clicked()
+void MainWindow::on_pushButton_toDir_clicked()
 {
-    QString output = QFileDialog::getSaveFileName(this, "",  "", "*.xdb");
-    if (!output.isEmpty()) {
-        ui->lineEdit_xdb_dstFile->setText(output);
+    QString input = QFileDialog::getSaveFileName(this, "",  "", "");
+    if (!input.isEmpty()) {
+        ui->lineEdit_toName->setText(input);
     }
 }
 
-void MainWindow::on_pushButton_xdb_start_clicked()
+void MainWindow::on_pushButton_conv_clicked()
 {
-    TxtToXdbReq req;
-    req.SrcFile = ui->lineEdit_xdb_srcFile->text().toStdString();
-    req.DstFile = ui->lineEdit_xdb_dstFile->text().toStdString();
-    if (req.SrcFile.empty() || req.DstFile.empty() || ui->lineEdit_xdb_srcFile->isEnabled() == false) {
+    ConvertDbReq req;
+    req.FromName = ui->lineEdit_fromName->text().toStdString();
+    req.ToName = ui->lineEdit_toName->text().toStdString();
+    req.MergeIpRange = ui->checkBox_MergeIpRange->isChecked();
+    req.FillFullUint32 = ui->checkBox_FillFullUint32->isChecked();
+    req.VerifyFullUint32 = ui->checkBox_VerifyFullUint32->isChecked();
+    if (req.FromName.empty() || req.ToName.empty()) {
         return;
     }
-    this->setTxtToXdb_IsRuning(true);
+    this->setConv_IsRuning(true);
 
-    req.IndexPolicyS = ui->comboBox_xdb_indexPolicy->currentText().toStdString();
+    req.FromType = ui->comboBox_fromType->currentText().toStdString();
+    req.ToType = ui->comboBox_toType->currentText().toStdString();
+
     m_syncUi.AddRunFnOn_OtherThread([=](){
-        std::string errMsg = TxtToXdb(req);
+        std::string errMsg = ConvertDb(req);
         m_syncUi.AddRunFnOn_UiThread([=](){
-            this->setTxtToXdb_IsRuning(false);
+            this->setConv_IsRuning(false);
             if (errMsg.empty()) {
                 Toast::Instance()->SetSuccess("转换成功");
                 return;
@@ -159,19 +91,4 @@ void MainWindow::on_pushButton_xdb_start_clicked()
             Toast::Instance()->SetError("失败 " + QString::fromStdString(errMsg));
         });
     });
-}
-
-void MainWindow::setTxtToXdb_IsRuning(bool runing)
-{
-    ui->lineEdit_xdb_srcFile->setEnabled(runing == false);
-    ui->lineEdit_xdb_dstFile->setEnabled(runing == false);
-    ui->comboBox_xdb_indexPolicy->setEnabled(runing == false);
-    ui->pushButton_xdb_dstFile->setEnabled(runing == false);
-    ui->pushButton_xdb_srcFile->setEnabled(runing == false);
-    ui->pushButton_xdb_start->setEnabled(runing == false);
-    if (runing) {
-        ui->pushButton_xdb_start->setText("正在转换...");
-    } else {
-        ui->pushButton_xdb_start->setText("开始转换");
-    }
 }

@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/orestonce/Ip2regionTool"
+	"github.com/orestonce/Ip2regionTool/dbformat"
 	"github.com/spf13/cobra"
 	"os"
+	"strings"
 )
 
 var rootCmd = &cobra.Command{
@@ -12,23 +14,34 @@ var rootCmd = &cobra.Command{
 }
 
 func main() {
+	initRootCmd()
+
 	rootCmd.Execute()
 }
 
-func init() {
-	var dbFileName string
-	var txtFileName string
-	var merge bool
-	var dbVersion int
+func initRootCmd() {
 
-	DbToTxtCmd := &cobra.Command{
-		Use: "DbToTxt",
+	var (
+		FromName         string
+		FromType         string
+		ToName           string
+		ToType           string
+		VerifyFullUint32 bool
+		FillFullUint32   bool
+		MergeIpRange     bool
+	)
+
+	convertCmd := &cobra.Command{
+		Use: "ConvertDb",
 		Run: func(cmd *cobra.Command, args []string) {
-			errMsg := Ip2regionTool.ConvertDbToTxt(Ip2regionTool.ConvertDbToTxt_Req{
-				DbFileName:  dbFileName,
-				TxtFileName: txtFileName,
-				Merge:       merge,
-				DbVersion:   dbVersion,
+			errMsg := Ip2regionTool.ConvertDb(Ip2regionTool.ConvertDbReq{
+				FromName:         FromName,
+				FromType:         FromType,
+				ToName:           ToName,
+				ToType:           ToType,
+				VerifyFullUint32: VerifyFullUint32,
+				FillFullUint32:   FillFullUint32,
+				MergeIpRange:     MergeIpRange,
 			})
 			if errMsg != `` {
 				fmt.Println(errMsg)
@@ -36,55 +49,27 @@ func init() {
 			}
 		},
 	}
-	DbToTxtCmd.Flags().StringVarP(&txtFileName, `txt`, ``, "", ``)
-	DbToTxtCmd.Flags().StringVarP(&dbFileName, `db`, ``, "", ``)
-	DbToTxtCmd.Flags().IntVarP(&dbVersion, "dbversion", "", 0, "0 -> auto detect, 1 -> v1, 2 -> v2")
-	DbToTxtCmd.Flags().BoolVarP(&merge, "merge", "", true, "")
-	rootCmd.AddCommand(DbToTxtCmd)
+	fromTypeList, toTypeList := GetTypeListForCmd()
 
-	var regionCsvvFileName string
+	convertCmd.Flags().StringVarP(&FromType, `FromType`, ``, "", strings.Join(fromTypeList, ","))
+	convertCmd.Flags().StringVarP(&FromName, `FromName`, ``, "", ``)
+	convertCmd.Flags().StringVarP(&ToType, "ToType", "", "", strings.Join(toTypeList, ","))
+	convertCmd.Flags().StringVarP(&ToName, "ToName", "", "", "")
+	convertCmd.Flags().BoolVarP(&VerifyFullUint32, "VerifyFullUint32", "", false, "")
+	convertCmd.Flags().BoolVarP(&FillFullUint32, "FillFullUint32", "", false, "")
+	convertCmd.Flags().BoolVarP(&MergeIpRange, "MergeIpRange", "", false, "")
 
-	TxtToDbCmd := &cobra.Command{
-		Use: "TxtToDb",
-		Run: func(cmd *cobra.Command, args []string) {
-			errMsg := Ip2regionTool.ConvertTxtToDb(Ip2regionTool.ConvertTxtToDb_Req{
-				TxtFileName:       txtFileName,
-				DbFileName:        dbFileName,
-				RegionCsvFileName: regionCsvvFileName,
-				Merge:             merge,
-			})
-			if errMsg != `` {
-				fmt.Println(errMsg)
-				os.Exit(-1)
-			}
-		},
+	rootCmd.AddCommand(convertCmd)
+}
+
+func GetTypeListForCmd() (fromTypeList []string, toTypeList []string) {
+	list := dbformat.GetDbTypeList()
+
+	for _, one := range list {
+		fromTypeList = append(fromTypeList, one.NameForCmd)
+		if one.SupportWrite {
+			toTypeList = append(toTypeList, one.NameForCmd)
+		}
 	}
-	TxtToDbCmd.Flags().StringVarP(&txtFileName, `txt`, ``, "", ``)
-	TxtToDbCmd.Flags().StringVarP(&dbFileName, `db`, ``, "", ``)
-	TxtToDbCmd.Flags().StringVarP(&regionCsvvFileName, "region", "", "", "")
-	TxtToDbCmd.Flags().BoolVarP(&merge, "merge", "", true, "")
-	rootCmd.AddCommand(TxtToDbCmd)
-
-	var srcFile string
-	var dstFile string
-	var indexPolicy string
-
-	TxtToXdbCmd := &cobra.Command{
-		Use: "TxtToXdb",
-		Run: func(cmd *cobra.Command, args []string) {
-			errMsg := Ip2regionTool.TxtToXdb(Ip2regionTool.TxtToXdbReq{
-				SrcFile:      srcFile,
-				DstFile:      dstFile,
-				IndexPolicyS: indexPolicy,
-			})
-			if errMsg != "" {
-				fmt.Println(errMsg)
-				os.Exit(-1)
-			}
-		},
-	}
-	TxtToXdbCmd.Flags().StringVarP(&srcFile, "srcFile", "", "", "")
-	TxtToXdbCmd.Flags().StringVarP(&dstFile, "dstFile", "", "", "")
-	TxtToXdbCmd.Flags().StringVarP(&indexPolicy, "indexPolicy", "", "", "[vector/btree]")
-	rootCmd.AddCommand(TxtToXdbCmd)
+	return fromTypeList, toTypeList
 }

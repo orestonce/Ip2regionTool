@@ -75,64 +75,76 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern __declspec(dllexport) void Go2cppFn_ConvertDbToTxt(char* in, int inLen, char** out, int* outLen);
-extern __declspec(dllexport) void Go2cppFn_GetDbVersionByName(char* in, int inLen, char** out, int* outLen);
-extern __declspec(dllexport) void Go2cppFn_ConvertTxtToDb(char* in, int inLen, char** out, int* outLen);
-extern __declspec(dllexport) void Go2cppFn_TxtToXdb(char* in, int inLen, char** out, int* outLen);
+extern __declspec(dllexport) void Go2cppFn_ConvertDb(char* in, int inLen, char** out, int* outLen);
+extern __declspec(dllexport) void Go2cppFn_GetDbTypeList(char* in, int inLen, char** out, int* outLen);
 
 #ifdef __cplusplus
 }
 #endif
 
 
-std::string ConvertDbToTxt(ConvertDbToTxt_Req in0){
+std::string ConvertDb(ConvertDbReq in0){
 	std::string in;
 	{
 		{
-			uint32_t tmp10 = in0.DbFileName.length();
-			char tmp11[4];
-			tmp11[0] = (uint32_t(tmp10) >> 24) & 0xFF;
-			tmp11[1] = (uint32_t(tmp10) >> 16) & 0xFF;
-			tmp11[2] = (uint32_t(tmp10) >> 8) & 0xFF;
-			tmp11[3] = (uint32_t(tmp10) >> 0) & 0xFF;
-			in.append(tmp11, 4);
-			in.append(in0.DbFileName);
+			uint32_t tmp17 = in0.FromName.length();
+			char tmp18[4];
+			tmp18[0] = (uint32_t(tmp17) >> 24) & 0xFF;
+			tmp18[1] = (uint32_t(tmp17) >> 16) & 0xFF;
+			tmp18[2] = (uint32_t(tmp17) >> 8) & 0xFF;
+			tmp18[3] = (uint32_t(tmp17) >> 0) & 0xFF;
+			in.append(tmp18, 4);
+			in.append(in0.FromName);
 		}
 		{
-			uint32_t tmp12 = in0.TxtFileName.length();
-			char tmp13[4];
-			tmp13[0] = (uint32_t(tmp12) >> 24) & 0xFF;
-			tmp13[1] = (uint32_t(tmp12) >> 16) & 0xFF;
-			tmp13[2] = (uint32_t(tmp12) >> 8) & 0xFF;
-			tmp13[3] = (uint32_t(tmp12) >> 0) & 0xFF;
-			in.append(tmp13, 4);
-			in.append(in0.TxtFileName);
+			uint32_t tmp19 = in0.FromType.length();
+			char tmp20[4];
+			tmp20[0] = (uint32_t(tmp19) >> 24) & 0xFF;
+			tmp20[1] = (uint32_t(tmp19) >> 16) & 0xFF;
+			tmp20[2] = (uint32_t(tmp19) >> 8) & 0xFF;
+			tmp20[3] = (uint32_t(tmp19) >> 0) & 0xFF;
+			in.append(tmp20, 4);
+			in.append(in0.FromType);
 		}
-		in.append((char*)(&in0.Merge), 1);
 		{
-			char tmp14[4];
-			tmp14[0] = (uint32_t(in0.DbVersion) >> 24) & 0xFF;
-			tmp14[1] = (uint32_t(in0.DbVersion) >> 16) & 0xFF;
-			tmp14[2] = (uint32_t(in0.DbVersion) >> 8) & 0xFF;
-			tmp14[3] = (uint32_t(in0.DbVersion) >> 0) & 0xFF;
-			in.append(tmp14, 4);
+			uint32_t tmp21 = in0.ToName.length();
+			char tmp22[4];
+			tmp22[0] = (uint32_t(tmp21) >> 24) & 0xFF;
+			tmp22[1] = (uint32_t(tmp21) >> 16) & 0xFF;
+			tmp22[2] = (uint32_t(tmp21) >> 8) & 0xFF;
+			tmp22[3] = (uint32_t(tmp21) >> 0) & 0xFF;
+			in.append(tmp22, 4);
+			in.append(in0.ToName);
 		}
+		{
+			uint32_t tmp23 = in0.ToType.length();
+			char tmp24[4];
+			tmp24[0] = (uint32_t(tmp23) >> 24) & 0xFF;
+			tmp24[1] = (uint32_t(tmp23) >> 16) & 0xFF;
+			tmp24[2] = (uint32_t(tmp23) >> 8) & 0xFF;
+			tmp24[3] = (uint32_t(tmp23) >> 0) & 0xFF;
+			in.append(tmp24, 4);
+			in.append(in0.ToType);
+		}
+		in.append((char*)(&in0.VerifyFullUint32), 1);
+		in.append((char*)(&in0.FillFullUint32), 1);
+		in.append((char*)(&in0.MergeIpRange), 1);
 	}
 	char *out = NULL;
 	int outLen = 0;
-	Go2cppFn_ConvertDbToTxt((char *)in.data(), in.length(), &out, &outLen);
+	Go2cppFn_ConvertDb((char *)in.data(), in.length(), &out, &outLen);
 	std::string retValue;
 	int outIdx = 0;
 	{
-		uint32_t tmp15 = 0;
-		uint32_t tmp16 = uint32_t(uint8_t(out[outIdx+0]) << 24);
-		uint32_t tmp17 = uint32_t(uint8_t(out[outIdx+1]) << 16);
-		uint32_t tmp18 = uint32_t(uint8_t(out[outIdx+2]) << 8);
-		uint32_t tmp19 = uint32_t(uint8_t(out[outIdx+3]) << 0);
-		tmp15 = tmp16 | tmp17 | tmp18 | tmp19;
+		uint32_t tmp25 = 0;
+		uint32_t tmp26 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+		uint32_t tmp27 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+		uint32_t tmp28 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+		uint32_t tmp29 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+		tmp25 = tmp26 | tmp27 | tmp28 | tmp29;
 		outIdx+=4;
-		retValue = std::string(out+outIdx, out+outIdx+tmp15);
-		outIdx+=tmp15;
+		retValue = std::string(out+outIdx, out+outIdx+tmp25);
+		outIdx+=tmp25;
 	}
 	if (out != NULL) {
 		free(out);
@@ -140,143 +152,59 @@ std::string ConvertDbToTxt(ConvertDbToTxt_Req in0){
 	return retValue;
 }
 
-int32_t GetDbVersionByName(std::string in0){
+std::vector<DbFormatType> GetDbTypeList(){
 	std::string in;
-	{
-		uint32_t tmp5 = in0.length();
-		char tmp6[4];
-		tmp6[0] = (uint32_t(tmp5) >> 24) & 0xFF;
-		tmp6[1] = (uint32_t(tmp5) >> 16) & 0xFF;
-		tmp6[2] = (uint32_t(tmp5) >> 8) & 0xFF;
-		tmp6[3] = (uint32_t(tmp5) >> 0) & 0xFF;
-		in.append(tmp6, 4);
-		in.append(in0);
-	}
 	char *out = NULL;
 	int outLen = 0;
-	Go2cppFn_GetDbVersionByName((char *)in.data(), in.length(), &out, &outLen);
-	int32_t retValue;
+	Go2cppFn_GetDbTypeList((char *)in.data(), in.length(), &out, &outLen);
+	std::vector<DbFormatType> retValue;
 	int outIdx = 0;
 	{
-		uint32_t tmp7 = uint32_t(uint8_t(out[outIdx+0]) << 24);
-		uint32_t tmp8 = uint32_t(uint8_t(out[outIdx+1]) << 16);
-		uint32_t tmp9 = uint32_t(uint8_t(out[outIdx+2]) << 8);
-		uint32_t tmp10 = uint32_t(uint8_t(out[outIdx+3]) << 0);
-		retValue = tmp7 | tmp8 | tmp9 | tmp10;
+		uint32_t tmp7 = 0;
+		uint32_t tmp8 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+		uint32_t tmp9 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+		uint32_t tmp10 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+		uint32_t tmp11 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+		tmp7 = tmp8 | tmp9 | tmp10 | tmp11;
 		outIdx+=4;
-	}
-	if (out != NULL) {
-		free(out);
-	}
-	return retValue;
-}
-
-std::string ConvertTxtToDb(ConvertTxtToDb_Req in0){
-	std::string in;
-	{
-		{
-			uint32_t tmp12 = in0.TxtFileName.length();
-			char tmp13[4];
-			tmp13[0] = (uint32_t(tmp12) >> 24) & 0xFF;
-			tmp13[1] = (uint32_t(tmp12) >> 16) & 0xFF;
-			tmp13[2] = (uint32_t(tmp12) >> 8) & 0xFF;
-			tmp13[3] = (uint32_t(tmp12) >> 0) & 0xFF;
-			in.append(tmp13, 4);
-			in.append(in0.TxtFileName);
+		for (uint32_t tmp12 = 0; tmp12 < tmp7; tmp12++) {
+			DbFormatType tmp13;
+			{
+				{
+					uint32_t tmp14 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+					uint32_t tmp15 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+					uint32_t tmp16 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+					uint32_t tmp17 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+					tmp13.ShowPriority = tmp14 | tmp15 | tmp16 | tmp17;
+					outIdx+=4;
+				}
+				{
+					uint32_t tmp18 = 0;
+					uint32_t tmp19 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+					uint32_t tmp20 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+					uint32_t tmp21 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+					uint32_t tmp22 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+					tmp18 = tmp19 | tmp20 | tmp21 | tmp22;
+					outIdx+=4;
+					tmp13.Desc = std::string(out+outIdx, out+outIdx+tmp18);
+					outIdx+=tmp18;
+				}
+				{
+					uint32_t tmp23 = 0;
+					uint32_t tmp24 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+					uint32_t tmp25 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+					uint32_t tmp26 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+					uint32_t tmp27 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+					tmp23 = tmp24 | tmp25 | tmp26 | tmp27;
+					outIdx+=4;
+					tmp13.ExtName = std::string(out+outIdx, out+outIdx+tmp23);
+					outIdx+=tmp23;
+				}
+				tmp13.SupportWrite = (bool) out[outIdx];
+				outIdx++;
+			}
+			retValue.push_back(tmp13);
 		}
-		{
-			uint32_t tmp14 = in0.DbFileName.length();
-			char tmp15[4];
-			tmp15[0] = (uint32_t(tmp14) >> 24) & 0xFF;
-			tmp15[1] = (uint32_t(tmp14) >> 16) & 0xFF;
-			tmp15[2] = (uint32_t(tmp14) >> 8) & 0xFF;
-			tmp15[3] = (uint32_t(tmp14) >> 0) & 0xFF;
-			in.append(tmp15, 4);
-			in.append(in0.DbFileName);
-		}
-		{
-			uint32_t tmp16 = in0.RegionCsvFileName.length();
-			char tmp17[4];
-			tmp17[0] = (uint32_t(tmp16) >> 24) & 0xFF;
-			tmp17[1] = (uint32_t(tmp16) >> 16) & 0xFF;
-			tmp17[2] = (uint32_t(tmp16) >> 8) & 0xFF;
-			tmp17[3] = (uint32_t(tmp16) >> 0) & 0xFF;
-			in.append(tmp17, 4);
-			in.append(in0.RegionCsvFileName);
-		}
-		in.append((char*)(&in0.Merge), 1);
-	}
-	char *out = NULL;
-	int outLen = 0;
-	Go2cppFn_ConvertTxtToDb((char *)in.data(), in.length(), &out, &outLen);
-	std::string retValue;
-	int outIdx = 0;
-	{
-		uint32_t tmp18 = 0;
-		uint32_t tmp19 = uint32_t(uint8_t(out[outIdx+0]) << 24);
-		uint32_t tmp20 = uint32_t(uint8_t(out[outIdx+1]) << 16);
-		uint32_t tmp21 = uint32_t(uint8_t(out[outIdx+2]) << 8);
-		uint32_t tmp22 = uint32_t(uint8_t(out[outIdx+3]) << 0);
-		tmp18 = tmp19 | tmp20 | tmp21 | tmp22;
-		outIdx+=4;
-		retValue = std::string(out+outIdx, out+outIdx+tmp18);
-		outIdx+=tmp18;
-	}
-	if (out != NULL) {
-		free(out);
-	}
-	return retValue;
-}
-
-std::string TxtToXdb(TxtToXdbReq in0){
-	std::string in;
-	{
-		{
-			uint32_t tmp11 = in0.SrcFile.length();
-			char tmp12[4];
-			tmp12[0] = (uint32_t(tmp11) >> 24) & 0xFF;
-			tmp12[1] = (uint32_t(tmp11) >> 16) & 0xFF;
-			tmp12[2] = (uint32_t(tmp11) >> 8) & 0xFF;
-			tmp12[3] = (uint32_t(tmp11) >> 0) & 0xFF;
-			in.append(tmp12, 4);
-			in.append(in0.SrcFile);
-		}
-		{
-			uint32_t tmp13 = in0.DstFile.length();
-			char tmp14[4];
-			tmp14[0] = (uint32_t(tmp13) >> 24) & 0xFF;
-			tmp14[1] = (uint32_t(tmp13) >> 16) & 0xFF;
-			tmp14[2] = (uint32_t(tmp13) >> 8) & 0xFF;
-			tmp14[3] = (uint32_t(tmp13) >> 0) & 0xFF;
-			in.append(tmp14, 4);
-			in.append(in0.DstFile);
-		}
-		{
-			uint32_t tmp15 = in0.IndexPolicyS.length();
-			char tmp16[4];
-			tmp16[0] = (uint32_t(tmp15) >> 24) & 0xFF;
-			tmp16[1] = (uint32_t(tmp15) >> 16) & 0xFF;
-			tmp16[2] = (uint32_t(tmp15) >> 8) & 0xFF;
-			tmp16[3] = (uint32_t(tmp15) >> 0) & 0xFF;
-			in.append(tmp16, 4);
-			in.append(in0.IndexPolicyS);
-		}
-	}
-	char *out = NULL;
-	int outLen = 0;
-	Go2cppFn_TxtToXdb((char *)in.data(), in.length(), &out, &outLen);
-	std::string retValue;
-	int outIdx = 0;
-	{
-		uint32_t tmp17 = 0;
-		uint32_t tmp18 = uint32_t(uint8_t(out[outIdx+0]) << 24);
-		uint32_t tmp19 = uint32_t(uint8_t(out[outIdx+1]) << 16);
-		uint32_t tmp20 = uint32_t(uint8_t(out[outIdx+2]) << 8);
-		uint32_t tmp21 = uint32_t(uint8_t(out[outIdx+3]) << 0);
-		tmp17 = tmp18 | tmp19 | tmp20 | tmp21;
-		outIdx+=4;
-		retValue = std::string(out+outIdx, out+outIdx+tmp17);
-		outIdx+=tmp17;
 	}
 	if (out != NULL) {
 		free(out);

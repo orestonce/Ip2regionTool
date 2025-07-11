@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/orestonce/Ip2regionTool"
+	"github.com/orestonce/Ip2regionTool/dbformat"
 	"github.com/orestonce/go2cpp"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"io/ioutil"
@@ -19,10 +20,8 @@ func main() {
 		EnableQtClass_RunOnUiThread: true,
 		EnableQtClass_Toast:         true,
 	})
-	ctx.Generate1(Ip2regionTool.ConvertDbToTxt)
-	ctx.Generate1(Ip2regionTool.GetDbVersionByName)
-	ctx.Generate1(Ip2regionTool.ConvertTxtToDb)
-	ctx.Generate1(Ip2regionTool.TxtToXdb)
+	ctx.Generate1(Ip2regionTool.ConvertDb)
+	ctx.Generate1(dbformat.GetDbTypeList)
 
 	if os.Getenv("GITHUB_ACTIONS") == "" { // 正常编译
 		ctx.MustCreateAmd64LibraryInDir("Ip2regionTool-qt")
