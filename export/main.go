@@ -28,7 +28,7 @@ func main() {
 	} else { // github actions 编译
 		version := strings.TrimPrefix(os.Getenv("GITHUB_REF_NAME"), "v")
 		urlStr := "https://github.com/" + os.Getenv("GITHUB_REPOSITORY")
-		ctx.MustCreate386LibraryInDir("Ip2regionTool-qt")
+		ctx.MustCreateAmd64LibraryInDir("Ip2regionTool-qt")
 		WriteVersionDotRc(WriteVersionDotRc_Req{
 			Version:      version,
 			ProductName:  "Ip2region数据转换工具",
