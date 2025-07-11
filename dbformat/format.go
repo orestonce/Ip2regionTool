@@ -63,7 +63,8 @@ func RegisterDbFormat(format DBFormat) {
 
 func GetDbFormatByType(desc string) DBFormat {
 	for _, one := range gDbFormatList {
-		if one.GetType().Desc == desc {
+		t := one.GetType()
+		if t.Desc == desc || t.NameForCmd == desc {
 			return one
 		}
 	}
