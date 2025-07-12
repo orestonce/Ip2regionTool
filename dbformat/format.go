@@ -35,8 +35,7 @@ const (
 	ShowPriority_txt           = iota
 	ShowPriority_Linsoul2014v1 = iota
 	ShowPriority_Linsoul2014v2 = iota
-	ShowPriority_IpipdnetDat   = iota
-	ShowPriority_IpipdnetDatX  = iota
+	ShowPriority_IpipdnetIpdb  = iota
 	ShowPriority_Maxmind       = iota
 )
 

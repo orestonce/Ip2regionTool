@@ -160,50 +160,61 @@ std::vector<DbFormatType> GetDbTypeList(){
 	std::vector<DbFormatType> retValue;
 	int outIdx = 0;
 	{
-		uint32_t tmp7 = 0;
-		uint32_t tmp8 = uint32_t(uint8_t(out[outIdx+0]) << 24);
-		uint32_t tmp9 = uint32_t(uint8_t(out[outIdx+1]) << 16);
-		uint32_t tmp10 = uint32_t(uint8_t(out[outIdx+2]) << 8);
-		uint32_t tmp11 = uint32_t(uint8_t(out[outIdx+3]) << 0);
-		tmp7 = tmp8 | tmp9 | tmp10 | tmp11;
+		uint32_t tmp8 = 0;
+		uint32_t tmp9 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+		uint32_t tmp10 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+		uint32_t tmp11 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+		uint32_t tmp12 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+		tmp8 = tmp9 | tmp10 | tmp11 | tmp12;
 		outIdx+=4;
-		for (uint32_t tmp12 = 0; tmp12 < tmp7; tmp12++) {
-			DbFormatType tmp13;
+		for (uint32_t tmp13 = 0; tmp13 < tmp8; tmp13++) {
+			DbFormatType tmp14;
 			{
 				{
-					uint32_t tmp14 = uint32_t(uint8_t(out[outIdx+0]) << 24);
-					uint32_t tmp15 = uint32_t(uint8_t(out[outIdx+1]) << 16);
-					uint32_t tmp16 = uint32_t(uint8_t(out[outIdx+2]) << 8);
-					uint32_t tmp17 = uint32_t(uint8_t(out[outIdx+3]) << 0);
-					tmp13.ShowPriority = tmp14 | tmp15 | tmp16 | tmp17;
+					uint32_t tmp15 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+					uint32_t tmp16 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+					uint32_t tmp17 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+					uint32_t tmp18 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+					tmp14.ShowPriority = tmp15 | tmp16 | tmp17 | tmp18;
 					outIdx+=4;
 				}
 				{
-					uint32_t tmp18 = 0;
-					uint32_t tmp19 = uint32_t(uint8_t(out[outIdx+0]) << 24);
-					uint32_t tmp20 = uint32_t(uint8_t(out[outIdx+1]) << 16);
-					uint32_t tmp21 = uint32_t(uint8_t(out[outIdx+2]) << 8);
-					uint32_t tmp22 = uint32_t(uint8_t(out[outIdx+3]) << 0);
-					tmp18 = tmp19 | tmp20 | tmp21 | tmp22;
+					uint32_t tmp19 = 0;
+					uint32_t tmp20 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+					uint32_t tmp21 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+					uint32_t tmp22 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+					uint32_t tmp23 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+					tmp19 = tmp20 | tmp21 | tmp22 | tmp23;
 					outIdx+=4;
-					tmp13.Desc = std::string(out+outIdx, out+outIdx+tmp18);
-					outIdx+=tmp18;
+					tmp14.NameForCmd = std::string(out+outIdx, out+outIdx+tmp19);
+					outIdx+=tmp19;
 				}
 				{
-					uint32_t tmp23 = 0;
-					uint32_t tmp24 = uint32_t(uint8_t(out[outIdx+0]) << 24);
-					uint32_t tmp25 = uint32_t(uint8_t(out[outIdx+1]) << 16);
-					uint32_t tmp26 = uint32_t(uint8_t(out[outIdx+2]) << 8);
-					uint32_t tmp27 = uint32_t(uint8_t(out[outIdx+3]) << 0);
-					tmp23 = tmp24 | tmp25 | tmp26 | tmp27;
+					uint32_t tmp24 = 0;
+					uint32_t tmp25 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+					uint32_t tmp26 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+					uint32_t tmp27 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+					uint32_t tmp28 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+					tmp24 = tmp25 | tmp26 | tmp27 | tmp28;
 					outIdx+=4;
-					tmp13.ExtName = std::string(out+outIdx, out+outIdx+tmp23);
-					outIdx+=tmp23;
+					tmp14.Desc = std::string(out+outIdx, out+outIdx+tmp24);
+					outIdx+=tmp24;
 				}
-				tmp13.SupportWrite = (bool) out[outIdx];
+				{
+					uint32_t tmp29 = 0;
+					uint32_t tmp30 = uint32_t(uint8_t(out[outIdx+0]) << 24);
+					uint32_t tmp31 = uint32_t(uint8_t(out[outIdx+1]) << 16);
+					uint32_t tmp32 = uint32_t(uint8_t(out[outIdx+2]) << 8);
+					uint32_t tmp33 = uint32_t(uint8_t(out[outIdx+3]) << 0);
+					tmp29 = tmp30 | tmp31 | tmp32 | tmp33;
+					outIdx+=4;
+					tmp14.ExtName = std::string(out+outIdx, out+outIdx+tmp29);
+					outIdx+=tmp29;
+				}
+				tmp14.SupportWrite = (bool) out[outIdx];
 				outIdx++;
 			}
-			retValue.push_back(tmp13);
+			retValue.push_back(tmp14);
 		}
 	}
 	if (out != NULL) {

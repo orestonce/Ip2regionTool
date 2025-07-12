@@ -21,6 +21,7 @@ struct ConvertDbReq{
 std::string ConvertDb(ConvertDbReq in0);
 struct DbFormatType{
 	int32_t ShowPriority;
+	std::string NameForCmd;
 	std::string Desc;
 	std::string ExtName;
 	bool SupportWrite;

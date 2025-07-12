@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/orestonce/Ip2regionTool/dbformat"
 	_ "github.com/orestonce/Ip2regionTool/dbformat/geoip"
-	_ "github.com/orestonce/Ip2regionTool/dbformat/ipipdnet"
+	_ "github.com/orestonce/Ip2regionTool/dbformat/ipipdnet/ipdb"
 	_ "github.com/orestonce/Ip2regionTool/dbformat/lionsoul2014"
 	_ "github.com/orestonce/Ip2regionTool/dbformat/txt"
 	"io/ioutil"
