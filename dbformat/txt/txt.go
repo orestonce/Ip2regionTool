@@ -32,11 +32,27 @@ func (DBFormatTxt) ReadData(data []byte) (list []dbformat.IpRangeItem, err error
 		}
 		sip := dbformat.Ipv4ToUint32(net.ParseIP(temp[0]))
 		eip := dbformat.Ipv4ToUint32(net.ParseIP(temp[1]))
+
+		var attachObj dbformat.IpRangeAttach
+		if len(temp) >= 3 {
+			attachObj.Country = temp[2]
+		}
+		if len(temp) >= 5 {
+			attachObj.Province = temp[4]
+		}
+		if len(temp) >= 6 {
+			attachObj.City = temp[5]
+		}
+		if len(temp) >= 7 {
+			attachObj.ISP = temp[6]
+		}
+
 		list = append(list, dbformat.IpRangeItem{
-			Origin:  one,
-			LowU32:  sip,
-			HighU32: eip,
-			Attach:  strings.Join(temp[2:], `|`),
+			Origin:    one,
+			LowU32:    sip,
+			HighU32:   eip,
+			Attach:    strings.Join(temp[2:], `|`),
+			AttachObj: attachObj,
 		})
 	}
 	return list, nil
